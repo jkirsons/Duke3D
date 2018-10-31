@@ -10,3 +10,5 @@
 #include $(IDF_PATH)/make/component_common.mk
 
 COMPONENT_ADD_INCLUDEDIRS += ../Game ../SDL
+engine.o: CFLAGS += -Wno-int-conversion
+mmulti.o: CFLAGS += -Wno-error=pointer-sign

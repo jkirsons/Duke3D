@@ -9,4 +9,5 @@
 
 #include $(IDF_PATH)/make/component_common.mk
 
-COMPONENT_ADD_INCLUDEDIRS += ../Engine ../SDL
+COMPONENT_ADD_INCLUDEDIRS += ../Engine ../SDL ../audiolib
+CFLAGS += -Wno-error=maybe-uninitialized

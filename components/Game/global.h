@@ -8,7 +8,7 @@
 
 #ifndef Duke3D_global_h
 #define Duke3D_global_h
-
+#include "esp32_compat.h"
 void FixFilePath(char  *filename);
 int FindDistance3D(int ix, int iy, int iz);
 void Shutdown(void);
@@ -38,7 +38,7 @@ void Shutdown(void);
 #define BYTE_ORDER BIG_ENDIAN
 #else
 // Defined in endian.h
-// #define BYTE_ORDER LITTLE_ENDIAN
+//#define BYTE_ORDER LITTLE_ENDIAN
 #endif
 #endif
 

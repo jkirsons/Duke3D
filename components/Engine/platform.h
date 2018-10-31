@@ -10,7 +10,9 @@
 #elif (defined __APPLE__)
     #include "macos_compat.h"
 #else
-#error Define your platform!
+//#error Define your platform!
+// Gadget Workbench - include for ESP32 compatibility
+    #include "esp32_compat.h"
 #endif
 
 #if (!defined __EXPORT__)

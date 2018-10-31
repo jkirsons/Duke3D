@@ -11,7 +11,7 @@
 #include "platform.h"
 #include "cache.h"
 #include "fixedPoint_math.h"
-#include "../../Game/src/global.h"
+#include "global.h"
 #include <strings.h>
 
 char game_dir[512];
@@ -405,13 +405,11 @@ int32_t klseek(int32_t handle, int32_t offset, int whence){
 	
 }
 
-#if defined(__APPLE__) || defined(__linux__)
 int32_t filelength(int32_t fd){
     struct stat stats;
     fstat(fd, &stats);
     return (int32_t )stats.st_size;
 }
-#endif
 
 int32_t kfilelength(int32_t handle)
 {

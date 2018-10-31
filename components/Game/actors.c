@@ -1515,7 +1515,7 @@ void movefallers(void)
 
 void movestandables(void)
 {
-    short i, j, k, m, nexti, nextj, p, sect;
+    short i, j, k, m, nexti, nextj, p = 0, sect;
     int32_t l=0, x, *t;
     spritetype *s;
 

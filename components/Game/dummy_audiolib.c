@@ -6,11 +6,11 @@
 //  Copyright (c) 2012 fabien sanglard. All rights reserved.
 //
 
-#include "audiolib/fx_man.h"
+#include "fx_man.h"
 #include <inttypes.h>
 #include <stdio.h>
 //#include "engine_protos.h"
-#include "audiolib/music.h"
+#include "music.h"
 
 //Dummy sound system for when a system has no sound system yet.
 /*

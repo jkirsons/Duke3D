@@ -5,7 +5,7 @@
 #include "console.h"
 
 // Required for certain cvars
-#include "../../Game/src/types.h"
+#include "types.h"
 #include "build.h"
 #include "funct.h"
 
@@ -18,7 +18,7 @@
 
 #include "joystick.h"
 
-#include "audiolib/music.h"
+#include "music.h"
 
 // Bind our Cvars at startup. You can still add bindings after this call, but
 // it is recommanded that you bind your default CVars here.

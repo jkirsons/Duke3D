@@ -1,0 +1,57 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "make",
+            "type": "shell",
+            "command": "make",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": 
+            {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+
+        {
+            "label": "make flash",
+            "type": "shell",
+            "command": "make flash",
+            "group": "build",
+            "problemMatcher": 
+            {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+
+        {
+            "label": "make monitor",
+            "type": "shell",
+            "command": "make monitor",
+            "group": "build",
+            "problemMatcher": 
+            {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        },
+
+        {
+            "label": "make menuconfig",
+            "type": "shell",
+            "command": "make menuconfig",
+            "group": "build",
+            "problemMatcher": 
+            {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        }          
+    ]
+}

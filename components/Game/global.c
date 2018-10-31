@@ -338,7 +338,7 @@ int _dos_findnext(struct find_t *f)
     return(0);
 }
 
-#elif defined(PLATFORM_UNIX) || defined(PLATFORM_MACOSX)
+#elif defined(PLATFORM_UNIX) || defined(PLATFORM_MACOSX) || defined(PLATFORM_ESP32)
 int _dos_findfirst(char  *filename, int x, struct find_t *f)
 {
     char  *ptr;

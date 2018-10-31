@@ -158,14 +158,14 @@ extern int BYTEVERSION_1_3;
 
 struct player_struct;
 
-#include "../../Game/src/types.h"
+#include "types.h"
 #include "file_lib.h"
 #include "develop.h"
 #include "gamedefs.h"
 #include "keyboard.h"
 #include "util_lib.h"
 #include "function.h"
-#include "audiolib/fx_man.h"
+#include "fx_man.h"
 #include "config.h"
 #include "sounds.h"
 #include "control.h"
@@ -173,11 +173,11 @@ struct player_struct;
 #include "rts.h"
 #include "soundefs.h"
 
-#include "audiolib/music.h"
+#include "music.h"
 
 #include "names.h"
 
-#include "../../Engine/src/engine.h"
+#include "engine.h"
 #include "fixedPoint_math.h"
 
 //#define TICRATE (120)
@@ -321,7 +321,7 @@ typedef struct
     int voice;
 } SOUNDOWNER;
 
-#include "audiolib/usrhooks.h"
+#include "usrhooks.h"
 /*
 
 

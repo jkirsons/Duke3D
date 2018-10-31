@@ -1,4 +1,4 @@
-#include "SDL_TFT.h"
+#include "SDL_video.h"
 
 
 
@@ -21,38 +21,25 @@ void SDL_UpdateRect(SDL_Surface *screen, Sint32 x, Sint32 y, Sint32 w, Sint32 h)
 
 }
 
+SDL_VideoInfo *SDL_GetVideoInfo(void)
+{
+    return NULL;
+}
+
+char *SDL_VideoDriverName(char *namebuf, int maxlen)
+{
+    return "";
+}
+
 SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags)
 {
     SDL_Rect rect = {0,0,320,240};
     return &rect;
 }
 
-
-JE_byte *** allocateTwoDimenArrayOnHeapUsingMalloc(int row, int col)
-{
-	JE_byte ***ptr = malloc(row * sizeof(*ptr) + row * (col * sizeof **ptr) );
-
-	int * const data = ptr + row;
-	for(int i = 0; i < row; i++)
-		ptr[i] = data + i * col;
-
-	return ptr;
-}
-
 void SDL_WM_SetCaption(const char *title, const char *icon)
 {
 
-}
-
-void SDL_Delay(Uint32 ms)
-{
-    const TickType_t xDelay = ms / portTICK_PERIOD_MS;
-    vTaskDelay( xDelay );
-}
-
-char *SDL_GetError(void)
-{
-    return (char *)"";
 }
 
 char *SDL_GetKeyName(SDLKey key)
@@ -68,16 +55,6 @@ SDL_Keymod SDL_GetModState(void)
 Uint32 SDL_GetTicks(void)
 {
     return esp_timer_get_time() / 1000;    
-}
-
-int SDL_Init(Uint32 flags)
-{
-    return 0;
-}
-
-void SDL_Quit(void)
-{
-
 }
 
 Uint32 SDL_WasInit(Uint32 flags)

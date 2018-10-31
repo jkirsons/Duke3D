@@ -42,7 +42,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "control.h"
 #include "sounds.h"
 #include "config.h"
-#include "audiolib/sndcards.h"
+#include "sndcards.h"
 
 #include "duke3d.h"
 
@@ -8082,7 +8082,7 @@ void findGRPToUse(char * groupfilefullpath){
 #ifdef __linux__
         if (dukeGRP_Match(dirEntry->d_name, _D_EXACT_NAMLEN(dirEntry)))
 #else
-        if (dukeGRP_Match(dirEntry->d_name,dirEntry->d_namlen))
+        if (dukeGRP_Match(dirEntry->d_name,strlen(dirEntry->d_name)))//dirEntry->d_namlen))
 #endif
         {
             sprintf(groupfilefullpath,"%s",dirEntry->d_name);

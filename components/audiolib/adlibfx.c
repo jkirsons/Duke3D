@@ -28,9 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    (c) Copyright 1994 James R. Dose.  All Rights Reserved.
 **********************************************************************/
 
-#include <dos.h>
+//#include <dos.h>
 #include <stdlib.h>
-#include <conio.h>
+//#include <conio.h>
 #include "dpmi.h"
 #include "task_man.h"
 #include "interrup.h"

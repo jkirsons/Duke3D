@@ -11,14 +11,14 @@
 #include "esp_heap_caps.h"
 #include "spi_lcd.h"
 
-#define SDL_INIT_VIDEO 1
-
 #define SDL_SWSURFACE 1
 #define SDL_HWSURFACE 2
 
 #define SDL_HWPALETTE 1
 #define SDL_FULLSCREEN 1
 
+#define SDL_SaveBMP(surface, file) {}
+#define SDL_LoadBMP_RW(src, freesrc) {}
 
 typedef struct{
   Uint8 r;
@@ -64,6 +64,32 @@ typedef struct SDL_Surface {
 	/* This structure also contains private fields not shown here */
 } SDL_Surface;
 
+/* These are the currently supported flags for the SDL_surface */
+/* Available for SDL_CreateRGBSurface() or SDL_SetVideoMode() */
+#define SDL_SWSURFACE	0x00000000	/* Surface is in system memory */
+#define SDL_HWSURFACE	0x00000001	/* Surface is in video memory */
+#define SDL_ASYNCBLIT	0x00000004	/* Use asynchronous blits if possible */
+/* Available for SDL_SetVideoMode() */
+#define SDL_ANYFORMAT	0x10000000	/* Allow any video depth/pixel-format */
+#define SDL_HWPALETTE	0x20000000	/* Surface has exclusive palette */
+#define SDL_DOUBLEBUF	0x40000000	/* Set up double-buffered video mode */
+#define SDL_FULLSCREEN	0x80000000	/* Surface is a full screen display */
+#define SDL_OPENGL      0x00000002      /* Create an OpenGL rendering context */
+#define SDL_OPENGLBLIT	0x0000000A	/* Create an OpenGL rendering context and use it for blitting */
+#define SDL_RESIZABLE	0x00000010	/* This video mode may be resized */
+#define SDL_NOFRAME	0x00000020	/* No window caption or edge frame */
+/* Used internally (read-only) */
+#define SDL_HWACCEL	0x00000100	/* Blit uses hardware acceleration */
+#define SDL_SRCCOLORKEY	0x00001000	/* Blit uses a source color key */
+#define SDL_RLEACCELOK	0x00002000	/* Private flag */
+#define SDL_RLEACCEL	0x00004000	/* Surface is RLE encoded */
+#define SDL_SRCALPHA	0x00010000	/* Blit uses source alpha blending */
+#define SDL_PREALLOC	0x01000000	/* Surface uses preallocated memory */
+
+/* Evaluates to true if the surface needs to be locked before access */
+#define SDL_MUSTLOCK(S) (((S)->flags & SDL_RLEACCEL) != 0)
+
+
 typedef struct{
   Uint32 hw_available:1;
   Uint32 wm_available:1;
@@ -81,17 +107,13 @@ typedef struct{
 typedef int SDLKey;
 
 void SDL_WM_SetCaption(const char *title, const char *icon);
-void SDL_Delay(Uint32 ms);
 Uint32 SDL_WasInit(Uint32 flags);
-int SDL_Init(Uint32 flags);
 int SDL_InitSubSystem(Uint32 flags);
-char *SDL_GetError(void);
 int SDL_FillRect(SDL_Surface *dst, SDL_Rect *dstrect, Uint32 color);
 SDL_Surface *SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth, Uint32 Rmask, Uint32 Gmask, Uint32 Bmask, Uint32 Amask);
 char *SDL_GetKeyName(SDLKey key);
 Uint32 SDL_GetTicks(void);
 SDL_Keymod SDL_GetModState(void);
-void SDL_Quit(void);
 SDL_Surface *SDL_GetVideoSurface(void);
 Uint32 SDL_MapRGB(SDL_PixelFormat *fmt, Uint8 r, Uint8 g, Uint8 b);
 int SDL_SetColors(SDL_Surface *surface, SDL_Color *colors, int firstcolor, int ncolors);
@@ -104,9 +126,10 @@ int SDL_LockSurface(SDL_Surface *surface);
 void SDL_UnlockSurface(SDL_Surface* surface);
 void SDL_UpdateRect(SDL_Surface *screen, Sint32 x, Sint32 y, Sint32 w, Sint32 h);
 SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags);
+SDL_VideoInfo *SDL_GetVideoInfo(void);
+char *SDL_VideoDriverName(char *namebuf, int maxlen);
 
 typedef unsigned char  JE_byte;
 //extern JE_byte ** allocateTwoDimenArrayOnHeapUsingMalloc(int row, int col);
-JE_byte *** allocateTwoDimenArrayOnHeapUsingMalloc(int row, int col);
 
 #endif

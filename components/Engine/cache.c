@@ -24,6 +24,8 @@
 
 #include "types.h"
 
+#include "esp_attr.h"
+
 /*
  *   This module keeps track of a standard linear cacheing system.
  *   To use this module, here's all you need to do:
@@ -68,8 +70,8 @@ typedef struct {
     uint8_t  *lock; } 
 cactype;
 
-cactype cac[MAXCACHEOBJECTS];
-int32_t lockrecip[200];
+EXT_RAM_ATTR cactype cac[MAXCACHEOBJECTS];
+EXT_RAM_ATTR int32_t lockrecip[200];
 
 // TC game directory
 char  game_dir[512] = { '\0' };

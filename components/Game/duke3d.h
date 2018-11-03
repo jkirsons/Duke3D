@@ -180,6 +180,8 @@ struct player_struct;
 #include "engine.h"
 #include "fixedPoint_math.h"
 
+#include "esp_attr.h"
+
 //#define TICRATE (120)
 //#define TICSPERFRAME (TICRATE/26)
 
@@ -349,8 +351,8 @@ typedef struct
 
 /* !!! FIXME: "sync" is defined in unistd.h ... :(  --ryan. */
 #define sync duke_sync
-extern input inputfifo[MOVEFIFOSIZ][MAXPLAYERS], sync[MAXPLAYERS];
-extern input recsync[RECSYNCBUFSIZ];
+extern EXT_RAM_ATTR input inputfifo[MOVEFIFOSIZ][MAXPLAYERS], sync[MAXPLAYERS];
+extern EXT_RAM_ATTR input recsync[RECSYNCBUFSIZ];
 
 extern int32_t movefifosendplc;
 
@@ -366,14 +368,14 @@ struct animwalltype
         short wallnum;
         int32_t tag;
 };
-extern struct animwalltype animwall[MAXANIMWALLS];
+extern EXT_RAM_ATTR struct animwalltype animwall[MAXANIMWALLS];
 extern short numanimwalls,probey,lastprobey;
 
 char  *mymembuf;
 extern uint8_t  typebuflen;
 char typebuf[41];
-extern uint8_t  MusicPtr[72000];
-extern int32_t msx[2048],msy[2048];
+extern EXT_RAM_ATTR uint8_t  MusicPtr[72000];
+extern EXT_RAM_ATTR int32_t msx[2048],msy[2048];
 extern short cyclers[MAXCYCLERS][6],numcyclers;
 extern char  myname[2048];
 
@@ -511,8 +513,8 @@ struct player_struct
 	uint8_t  fakeplayer;
 };
 
-extern uint8_t  tempbuf[2048];
-extern uint8_t packbuf[576];
+extern EXT_RAM_ATTR uint8_t  tempbuf[2048];
+extern EXT_RAM_ATTR uint8_t packbuf[576];
 
 extern int32_t gc,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
 
@@ -520,7 +522,8 @@ extern int32_t impact_damage,respawnactortime,respawnitemtime;
 
 #define MOVFIFOSIZ 256
 
-extern short spriteq[1024],spriteqloc,spriteqamount;
+extern EXT_RAM_ATTR short spriteq[1024];
+extern short spriteqloc,spriteqamount;
 extern struct player_struct ps[MAXPLAYERS];
 extern struct player_orig po[MAXPLAYERS];
 extern struct user_defs ud;
@@ -534,29 +537,31 @@ extern short int global_random;
 extern int32_t scaredfallz;
 extern char  buf[80]; //My own generic input buffer
 
-extern char  fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
+extern EXT_RAM_ATTR char  fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
 extern uint8_t  scantoasc[128],ready2send;
 extern uint8_t  scantoascwithshift[128];
 
 extern fx_device device;
-extern SAMPLE Sound[ NUM_SOUNDS ];
+extern EXT_RAM_ATTR SAMPLE Sound[ NUM_SOUNDS ];
 extern int32 VoiceToggle,AmbienceToggle, OpponentSoundToggle;
 extern int32 mouseSensitivity_X, mouseSensitivity_Y;
-extern SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
+extern EXT_RAM_ATTR SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
 
 extern uint8_t  playerreadyflag[MAXPLAYERS],playerquitflag[MAXPLAYERS];
-extern char  sounds[NUM_SOUNDS][14];
+extern EXT_RAM_ATTR char  sounds[NUM_SOUNDS][14];
 
-extern int32_t script[MAXSCRIPTSIZE],*scriptptr,*insptr,*labelcode,labelcnt;
+extern int32_t EXT_RAM_ATTR script[MAXSCRIPTSIZE];
+extern int32_t *scriptptr,*insptr,*labelcode,labelcnt;
 extern char  *label,*textptr,error,warning;
 extern uint8_t killit_flag;
-extern int32_t *actorscrptr[MAXTILES],*parsing_actor;
-extern uint8_t  actortype[MAXTILES];
+extern EXT_RAM_ATTR int32_t *actorscrptr[MAXTILES];
+extern int32_t *parsing_actor;
+extern EXT_RAM_ATTR uint8_t  actortype[MAXTILES];
 extern uint8_t  *music_pointer;
 
 extern uint8_t  ipath[80],opath[80];
 
-extern char  music_fn[4][11][13];
+extern EXT_RAM_ATTR char  music_fn[4][11][13];
 extern uint8_t music_select;
 extern char  env_music_fn[4][13];
 extern short camsprite;
@@ -575,10 +580,10 @@ struct weaponhit
     int32_t temp_data[6];
 };
 
-extern struct weaponhit hittype[MAXSPRITES];
+extern EXT_RAM_ATTR struct weaponhit hittype[MAXSPRITES];
 
 extern input loc;
-extern input recsync[RECSYNCBUFSIZ];
+extern EXT_RAM_ATTR input recsync[RECSYNCBUFSIZ];
 extern int32_t avgfvel, avgsvel, avgavel, avghorz, avgbits;
 
 extern short numplayers, myconnectindex;
@@ -593,8 +598,8 @@ extern uint8_t  display_mirror,rtsplaying;
 extern int32_t movefifoend[MAXPLAYERS];
 extern int32_t ototalclock;
 
-extern int32_t *animateptr[MAXANIMATES], animategoal[MAXANIMATES];
-extern int32_t animatevel[MAXANIMATES];
+extern EXT_RAM_ATTR int32_t *animateptr[MAXANIMATES], animategoal[MAXANIMATES];
+extern EXT_RAM_ATTR int32_t animatevel[MAXANIMATES];
 // extern int32_t oanimateval[MAXANIMATES];
 extern short neartagsector, neartagwall, neartagsprite;
 extern int32_t neartaghitdist;
@@ -612,14 +617,14 @@ extern volatile int32_t checksume;
 //#include "engine_protos.h"
 
 extern uint8_t  screencapt;
-extern short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
-extern uint8_t  soundpr[NUM_SOUNDS],soundm[NUM_SOUNDS];
-extern int32_t soundsiz[NUM_SOUNDS];
-extern char  level_names[44][33];
+extern EXT_RAM_ATTR short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
+extern EXT_RAM_ATTR uint8_t  soundpr[NUM_SOUNDS],soundm[NUM_SOUNDS];
+extern EXT_RAM_ATTR int32_t soundsiz[NUM_SOUNDS];
+extern EXT_RAM_ATTR char  level_names[44][33];
 extern int32_t partime[44],designertime[44];
 extern char  volume_names[4][33];
 extern char  skill_names[5][33];
-extern char  level_file_names[44][128];
+extern EXT_RAM_ATTR char  level_file_names[44][128];
 
 extern int32 SoundToggle,MusicToggle;
 extern short last_threehundred,lastsavedpos;
@@ -640,7 +645,7 @@ extern short myhoriz, omyhoriz, myhorizoff, omyhorizoff, globalskillsound;
 extern short myang, omyang, mycursectnum, myjumpingcounter;
 extern uint8_t  myjumpingtoggle, myonground, myhardlanding,myreturntocenter;
 extern int32_t fakemovefifoplc;
-extern int32_t myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
+extern EXT_RAM_ATTR int32_t myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
 extern int32_t myhorizbak[MOVEFIFOSIZ];
 extern short myangbak[MOVEFIFOSIZ];
 
@@ -668,7 +673,7 @@ extern uint8_t  networkmode, movesperpacket;
 extern uint8_t  gamequit;
 
 extern uint8_t  pus,pub,camerashitable,freezerhurtowner,lasermode;
-extern uint8_t  syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
+extern EXT_RAM_ATTR uint8_t  syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 extern int8_t multiwho, multipos, multiwhat, multiflag;
 extern int32_t syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
 extern int32_t numfreezebounces,rpgblastradius,pipebombblastradius,tripbombblastradius,shrinkerblastradius,morterblastradius,bouncemineblastradius,seenineblastradius;
@@ -679,9 +684,9 @@ extern uint8_t  stereo,eightytwofifty,playerswhenstarted,everyothertime;
 extern int32_t myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter;
 
 extern int32_t numinterpolations, startofdynamicinterpolations;
-extern int32_t oldipos[MAXINTERPOLATIONS];
-extern int32_t bakipos[MAXINTERPOLATIONS];
-extern int32_t *curipos[MAXINTERPOLATIONS];
+extern EXT_RAM_ATTR int32_t oldipos[MAXINTERPOLATIONS];
+extern EXT_RAM_ATTR int32_t bakipos[MAXINTERPOLATIONS];
+extern EXT_RAM_ATTR int32_t *curipos[MAXINTERPOLATIONS];
 
 extern short numclouds,clouds[128],cloudx[128],cloudy[128];
 extern int32_t cloudtotalclock,totalmemory;

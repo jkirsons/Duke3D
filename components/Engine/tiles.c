@@ -11,9 +11,11 @@
 #include "draw.h"
 #include "filesystem.h"
 
+#include "esp_attr.h"
+
 char  artfilename[20];
 
-tile_t tiles[MAXTILES];
+EXT_RAM_ATTR tile_t tiles[MAXTILES];
 
 int32_t numTiles;
 
@@ -21,7 +23,7 @@ int32_t artversion;
 
 uint8_t  *pic = NULL;
 
-uint8_t  gotpic[(MAXTILES+7)>>3];
+EXT_RAM_ATTR uint8_t  gotpic[(MAXTILES+7)>>3];
 
 void setviewtotile(short tilenume, int32_t tileWidth, int32_t tileHeight)
 {

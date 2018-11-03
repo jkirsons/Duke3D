@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __PITCH_H
 #define __PITCH_H
 
-#include "../duke3d.h"
+#include "duke3d.h"
 
 enum PITCH_ERRORS
    {

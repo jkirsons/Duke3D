@@ -11,7 +11,7 @@
 
 #include "build.h"
 
-
+#include "esp_attr.h"
 
 /*
 // The dimension of the tile in texels unit. The sizes can be obtained for
@@ -47,7 +47,7 @@ typedef struct tile_s{
 } tile_t;
 
 
-extern tile_t tiles[MAXTILES];
+extern EXT_RAM_ATTR tile_t tiles[MAXTILES];
 
 void setviewtotile(short tilenume, int32_t tileWidth, int32_t tileHeight);
 void squarerotatetile(short tilenume);
@@ -59,7 +59,7 @@ void copytilepiece(int32_t tilenume1, int32_t sx1, int32_t sy1, int32_t xsiz, in
 
 
 //Bitvector marking picture used for rendition.
-extern uint8_t  gotpic[(MAXTILES+7)>>3];
+extern EXT_RAM_ATTR uint8_t  gotpic[(MAXTILES+7)>>3];
 void setgotpic(int32_t tilenume);
 
 

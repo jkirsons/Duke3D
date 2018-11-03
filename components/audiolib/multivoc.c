@@ -61,7 +61,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "multivoc.h"
 #include "_multivc.h"
 #include "debugio.h"
-#include "../sounddebugdefs.h"
+#include "sounddebugdefs.h"
 
 // for the Mutex
 #include <SDL.h>

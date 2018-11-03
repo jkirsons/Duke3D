@@ -30,9 +30,17 @@ void SDL_Delay(Uint32 ms);
 void SDL_ClearError(void);
 char *SDL_GetError(void);
 
-
+struct SDL_mutex;
+typedef struct SDL_mutex SDL_mutex;
 
 char *** allocateTwoDimenArrayOnHeapUsingMalloc(int row, int col);
 
+#define SDL_mutexP(mutex) SDL_LockMutex(mutex)
+#define SDL_mutexV(mutex) SDL_UnlockMutex(mutex)
+
+void SDL_DestroyMutex(SDL_mutex* mutex);
+SDL_mutex* SDL_CreateMutex(void);
+int SDL_LockMutex(SDL_mutex* mutex);
+int SDL_UnlockMutex(SDL_mutex* mutex);
 
 #endif

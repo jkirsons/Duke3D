@@ -14,7 +14,9 @@
 #include "global.h"
 #include <strings.h>
 
-char game_dir[512];
+#include "esp_attr.h"
+
+EXT_RAM_ATTR char game_dir[512];
 
 //The multiplayer module in game.dll needs direct access to the crc32 (sic).
 int32_t groupefil_crc32[MAXGROUPFILES];
@@ -44,10 +46,10 @@ typedef struct grpSet_s{
 
 // Marking it static gurantee not only invisility outside module
 // but also that the content will be set to 0.
-static grpSet_t grpSet;
+EXT_RAM_ATTR static grpSet_t grpSet;
 
 
-uint8_t         crcBuffer[ 1 << 20]     ;
+EXT_RAM_ATTR uint8_t         crcBuffer[ 1 << 20]     ;
 int32_t initgroupfile(const char  *filename)
 {
 	uint8_t         buf[16]                 ;
@@ -262,7 +264,7 @@ typedef struct openFile_s{
 
 
 #define MAXOPENFILES 64
-static openFile_t openFiles[MAXOPENFILES];
+EXT_RAM_ATTR static openFile_t openFiles[MAXOPENFILES];
 
 int32_t kopen4load(const char  *filename, int openOnlyFromGRP){
     

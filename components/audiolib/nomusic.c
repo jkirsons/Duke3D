@@ -58,7 +58,7 @@ int MUSIC_StopSong(void)
 	return 0;
 }
 
-int MUSIC_PlaySong(unsigned char *song, int loopflag)
+int MUSIC_PlaySong(char *song, int loopflag)
 {
 	return 0;
 }
@@ -72,11 +72,11 @@ int MUSIC_GetContext(void)
 	return 0;
 }
 
-void MUSIC_SetSongTick(unsigned long PositionInTicks)
+void MUSIC_SetSongTick(uint32_t PositionInTicks)
 {
 }
 
-void MUSIC_SetSongTime(unsigned long milliseconds)
+void MUSIC_SetSongTime(uint32_t milliseconds)
 {
 }
 
@@ -112,4 +112,8 @@ void MUSIC_RerouteMidiChannel(int channel, int cdecl function( int event, int c1
 
 void MUSIC_RegisterTimbreBank(unsigned char *timbres)
 {
+}
+
+// This is the method called from the Game Module.
+void PlayMusic(char  *fileName){
 }

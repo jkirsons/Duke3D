@@ -5,7 +5,7 @@
 #include "util.h"
 
 #include "SDL.h"
-#include "SDL_mixer.h"
+//#include "SDL_mixer.h"
 
 extern volatile int MV_MixPage;
 
@@ -20,7 +20,7 @@ static int _NumDivisions;
 static int _SampleRate;
 static int _remainder;
 
-static Mix_Chunk *blank;
+//static Mix_Chunk *blank;
 static unsigned char *blank_buf;
 
 /*
@@ -151,7 +151,7 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 
 	_remainder = 0;
 	
-	format = (MixMode & SIXTEEN_BIT) ? AUDIO_S16LSB : AUDIO_U8;
+	//format = (MixMode & SIXTEEN_BIT) ? AUDIO_S16LSB : AUDIO_U8;
 	channels = (MixMode & STEREO) ? 2 : 1;
 
  /*
@@ -166,27 +166,27 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 
 	if (chunksize % blah) chunksize += blah - (chunksize % blah);
 
-	if (Mix_OpenAudio(SampleRate, format, channels, chunksize) < 0) {
-		DSL_SetErrorCode(DSL_MixerInitFailure);
+	//if (Mix_OpenAudio(SampleRate, format, channels, chunksize) < 0) {
+	//	DSL_SetErrorCode(DSL_MixerInitFailure);
 		
-		return DSL_Error;
-	}
+	//	return DSL_Error;
+	//}
 
 /*
 	Mix_SetPostMix(mixer_callback, NULL);
 */
 	/* have to use a channel because postmix will overwrite the music... */
-	Mix_RegisterEffect(0, mixer_callback, NULL, NULL);
+	//Mix_RegisterEffect(0, mixer_callback, NULL, NULL);
 	
 	/* create a dummy sample just to allocate that channel */
-	blank_buf = (Uint8 *)malloc(4096);
-	memset(blank_buf, 0, 4096);
+	//blank_buf = (Uint8 *)malloc(4096);
+	//memset(blank_buf, 0, 4096);
 	
-	blank = Mix_QuickLoad_RAW(blank_buf, 4096);
+	//blank = Mix_QuickLoad_RAW(blank_buf, 4096);
 		
-	Mix_PlayChannel(0, blank, -1);
+	//Mix_PlayChannel(0, blank, -1);
 	
-	mixer_initialized = 1;
+	//mixer_initialized = 1;
 	
 	return DSL_Ok;
 }
@@ -194,14 +194,14 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 void DSL_StopPlayback( void )
 {
 	if (mixer_initialized) {
-		Mix_HaltChannel(0);
+		//Mix_HaltChannel(0);
 	}
 	
-	if (blank != NULL) {
-		Mix_FreeChunk(blank);
-	}
+	//if (blank != NULL) {
+		//Mix_FreeChunk(blank);
+	//}
 	
-	blank = NULL;
+	//blank = NULL;
 	
 	if (blank_buf  != NULL) {
 		free(blank_buf);
@@ -210,7 +210,7 @@ void DSL_StopPlayback( void )
 	blank_buf = NULL;
 	
 	if (mixer_initialized) {
-		Mix_CloseAudio();
+		//Mix_CloseAudio();
 	}
 	
 	mixer_initialized = 0;

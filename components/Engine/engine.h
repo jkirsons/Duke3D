@@ -139,7 +139,8 @@ int clipinsidebox(int32_t x, int32_t y, int16_t wallnum, int32_t walldist);
 #include "tiles.h"
 #include "network.h"
     
-    
+#include "esp_attr.h"
+
 //Exported for tile module
     extern int32_t setviewcnt;
     extern int32_t bakvidoption[4];
@@ -147,12 +148,12 @@ int clipinsidebox(int32_t x, int32_t y, int16_t wallnum, int32_t walldist);
     extern int32_t bakxsiz[4], bakysiz[4];
     extern int32_t bakwindowx1[4], bakwindowy1[4];
     extern int32_t bakwindowx2[4], bakwindowy2[4];
-    extern uint8_t  picsiz[MAXTILES], tilefilenum[MAXTILES];
-    extern int16_t bakumost[MAXXDIM+1], bakdmost[MAXXDIM+1];
+    extern EXT_RAM_ATTR uint8_t  picsiz[MAXTILES], tilefilenum[MAXTILES];
+    extern EXT_RAM_ATTR int16_t bakumost[MAXXDIM+1], bakdmost[MAXXDIM+1];
     extern int32_t numtilefiles, artfil , artfilnum, artfilplc;
     extern int32_t pow2long[32];
     extern int32_t artsize , cachesize ;
-    extern int32_t tilefileoffs[MAXTILES];
+    extern EXT_RAM_ATTR int32_t tilefileoffs[MAXTILES];
     extern int32_t totalclocklock;
 
 #ifdef __cplusplus

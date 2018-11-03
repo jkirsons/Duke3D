@@ -10,6 +10,8 @@
 
 #include "platform.h"
 
+#include "esp_attr.h"
+
 /* set these in your _platform_init() implementation. */
 int _argc;
 char  **_argv;
@@ -27,7 +29,7 @@ extern int32_t qsetmode;
 extern int32_t  pageoffset, ydim16;
 extern uint8_t* frameplace;
 extern uint8_t* frameoffset;
-extern uint8_t  textfont[1024], smalltextfont[1024];
+extern EXT_RAM_ATTR uint8_t  textfont[1024], smalltextfont[1024];
 extern uint8_t  pow2char[8];
 extern int32_t stereomode, visualpage, activepage, whiteband, blackband;
 extern int32_t searchx, searchy;

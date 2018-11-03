@@ -52,6 +52,18 @@
                 "base": "$gcc",
                 "fileLocation": "absolute"
             }
-        }          
+        },
+
+        {
+            "label": "make size",
+            "type": "shell",
+            "command": "make size",
+            "group": "build",
+            "problemMatcher": 
+            {
+                "base": "$gcc",
+                "fileLocation": "absolute"
+            }
+        }              
     ]
 }

@@ -32,8 +32,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "global.h"
 #include "duke3d.h"
 
+#include "esp_attr.h"
+
 char  *mymembuf;
-uint8_t  MusicPtr[72000];
+EXT_RAM_ATTR uint8_t  MusicPtr[72000];
 
 
 crc32_t crc32lookup[] = {
@@ -73,26 +75,27 @@ short neartagsector, neartagwall, neartagsprite;
 int32_t gc,neartaghitdist,lockclock,max_player_health,max_armour_amount,max_ammo_amount[MAX_WEAPONS];
 
 // int32_t temp_data[MAXSPRITES][6];
-struct weaponhit hittype[MAXSPRITES];
-short spriteq[1024],spriteqloc,spriteqamount=64;
+EXT_RAM_ATTR struct weaponhit hittype[MAXSPRITES];
+EXT_RAM_ATTR short spriteq[1024];
+short spriteqloc,spriteqamount=64;
 
 // ported build engine has this, too.  --ryan.
 #if PLATFORM_DOS
 short moustat = 0;
 #endif
 
-struct animwalltype animwall[MAXANIMWALLS];
+EXT_RAM_ATTR struct animwalltype animwall[MAXANIMWALLS];
 short numanimwalls;
-int32_t *animateptr[MAXANIMATES], animategoal[MAXANIMATES], animatevel[MAXANIMATES], animatecnt;
+EXT_RAM_ATTR int32_t *animateptr[MAXANIMATES], animategoal[MAXANIMATES], animatevel[MAXANIMATES], animatecnt;
 // int32_t oanimateval[MAXANIMATES];
 short animatesect[MAXANIMATES];
-int32_t msx[2048],msy[2048];
+EXT_RAM_ATTR int32_t msx[2048],msy[2048];
 short cyclers[MAXCYCLERS][6],numcyclers;
 
-char  fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
+EXT_RAM_ATTR char  fta_quotes[NUMOFFIRSTTIMEACTIVE][64];
 
-uint8_t  tempbuf[2048];
-uint8_t packbuf[576];
+EXT_RAM_ATTR uint8_t  tempbuf[2048];
+EXT_RAM_ATTR uint8_t packbuf[576];
 
 char  buf[80];
 
@@ -103,25 +106,25 @@ int current_menu;
 
 uint8_t  betaname[80];
 
-char level_names[44][33];
-char level_file_names[44][128];
+EXT_RAM_ATTR char level_names[44][33];
+EXT_RAM_ATTR char level_file_names[44][128];
 int32_t partime[44],designertime[44];
 char  volume_names[4][33] = { "L.A. MELTDOWN", "LUNAR APOCALYPSE", "SHRAPNEL CITY", "" }; // Names are not in 1.3 con files. MUST be in code.
 char  skill_names[5][33] = { "PIECE OF CAKE", "LET'S ROCK", "COME GET SOME", "DAMN I'M GOOD", "" };
 
 volatile int32_t checksume;
-int32_t soundsiz[NUM_SOUNDS];
+EXT_RAM_ATTR int32_t soundsiz[NUM_SOUNDS];
 
-short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
-uint8_t  soundm[NUM_SOUNDS],soundpr[NUM_SOUNDS];
-char  sounds[NUM_SOUNDS][14];
+EXT_RAM_ATTR short soundps[NUM_SOUNDS],soundpe[NUM_SOUNDS],soundvo[NUM_SOUNDS];
+EXT_RAM_ATTR uint8_t  soundm[NUM_SOUNDS],soundpr[NUM_SOUNDS];
+EXT_RAM_ATTR char  sounds[NUM_SOUNDS][14];
 
 short title_zoom;
 
 fx_device device;
 
-SAMPLE Sound[ NUM_SOUNDS ];
-SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
+EXT_RAM_ATTR SAMPLE Sound[ NUM_SOUNDS ];
+EXT_RAM_ATTR SOUNDOWNER SoundOwner[NUM_SOUNDS][4];
 
 uint8_t  numplayersprites,earthquaketime;
 
@@ -131,16 +134,16 @@ struct player_struct ps[MAXPLAYERS];
 struct user_defs ud;
 
 uint8_t  pus, pub;
-uint8_t  syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
+EXT_RAM_ATTR uint8_t  syncstat, syncval[MAXPLAYERS][MOVEFIFOSIZ];
 int32_t syncvalhead[MAXPLAYERS], syncvaltail, syncvaltottail;
 
 input sync[MAXPLAYERS], loc;
-input recsync[RECSYNCBUFSIZ];
+EXT_RAM_ATTR input recsync[RECSYNCBUFSIZ];
 int32_t avgfvel, avgsvel, avgavel, avghorz, avgbits;
 
 
-input inputfifo[MOVEFIFOSIZ][MAXPLAYERS];
-input recsync[RECSYNCBUFSIZ];
+EXT_RAM_ATTR input inputfifo[MOVEFIFOSIZ][MAXPLAYERS];
+EXT_RAM_ATTR input recsync[RECSYNCBUFSIZ];
 
 int32_t movefifosendplc;
 
@@ -155,18 +158,20 @@ uint8_t  playerreadyflag[MAXPLAYERS],ready2send;
 uint8_t  playerquitflag[MAXPLAYERS];
 int32_t vel, svel, angvel, horiz, ototalclock, respawnactortime=768, respawnitemtime=768, groupfile;
 
-int32_t script[MAXSCRIPTSIZE],*scriptptr,*insptr,*labelcode,labelcnt;
-int32_t *actorscrptr[MAXTILES],*parsing_actor;
+EXT_RAM_ATTR int32_t script[MAXSCRIPTSIZE];
+int32_t *scriptptr,*insptr,*labelcode,labelcnt;
+EXT_RAM_ATTR int32_t *actorscrptr[MAXTILES];
+int32_t *parsing_actor;
 char  *label,*textptr,error,warning ;
 uint8_t killit_flag;
 uint8_t  *music_pointer;
-uint8_t  actortype[MAXTILES];
+EXT_RAM_ATTR uint8_t  actortype[MAXTILES];
 
 
 uint8_t  display_mirror,typebuflen;
 char typebuf[41];
 
-char  music_fn[4][11][13];
+EXT_RAM_ATTR char  music_fn[4][11][13];
 uint8_t music_select;
 char  env_music_fn[4][13];
 uint8_t  rtsplaying;
@@ -201,7 +206,7 @@ uint8_t  myjumpingtoggle, myonground, myhardlanding, myreturntocenter;
 int8_t multiwho, multipos, multiwhat, multiflag;
 
 int32_t fakemovefifoplc,movefifoplc;
-int32_t myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
+EXT_RAM_ATTR int32_t myxbak[MOVEFIFOSIZ], myybak[MOVEFIFOSIZ], myzbak[MOVEFIFOSIZ];
 int32_t myhorizbak[MOVEFIFOSIZ],dukefriction = 0xcc00, show_shareware;
 
 short myangbak[MOVEFIFOSIZ];
@@ -218,9 +223,9 @@ int32_t myminlag[MAXPLAYERS], mymaxlag, otherminlag, bufferjitter = 1;
 short numclouds,clouds[128],cloudx[128],cloudy[128];
 int32_t cloudtotalclock = 0,totalmemory = 0;
 int32_t numinterpolations = 0, startofdynamicinterpolations = 0;
-int32_t oldipos[MAXINTERPOLATIONS];
-int32_t bakipos[MAXINTERPOLATIONS];
-int32_t *curipos[MAXINTERPOLATIONS];
+EXT_RAM_ATTR int32_t oldipos[MAXINTERPOLATIONS];
+EXT_RAM_ATTR int32_t bakipos[MAXINTERPOLATIONS];
+EXT_RAM_ATTR int32_t *curipos[MAXINTERPOLATIONS];
 
 
 // portability stuff.  --ryan.
@@ -857,7 +862,7 @@ uint8_t  *ultoa(uint32_t value, uint8_t  *string, int radix)
 }
 #endif
 
-char  ApogeePath[256];
+EXT_RAM_ATTR char  ApogeePath[256];
 
 int setup_homedir (void)
 {

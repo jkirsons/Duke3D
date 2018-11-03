@@ -30,6 +30,8 @@
 #include "engine.h"
 #include "tiles.h"
 
+#include "esp_attr.h"
+
 int32_t stereowidth = 23040, stereopixelwidth = 28, ostereopixelwidth = -1;
 int32_t stereomode = 0, visualpage, activepage, whiteband, blackband;
 uint8_t  oa1, o3c2, ortca, ortcb, overtbits, laststereoint;
@@ -57,12 +59,12 @@ int32_t curbrightness = 0;
 
 /* Textured Map variables */
 static uint8_t  globalpolytype;
-static short *dotp1[MAXYDIM], *dotp2[MAXYDIM];
+EXT_RAM_ATTR static short *dotp1[MAXYDIM], *dotp2[MAXYDIM];
 
-static char  tempbuf[MAXWALLS];
+EXT_RAM_ATTR static char tempbuf[MAXWALLS];
 
 int32_t ebpbak, espbak;
-int32_t slopalookup[16384];
+EXT_RAM_ATTR int32_t slopalookup[16384];
 
 /*
  * !!! used to be static. If we ever put the original setgamemode() back, this
@@ -71,14 +73,14 @@ int32_t slopalookup[16384];
 uint8_t  permanentlock = 255;
 int32_t  mapversion;
 
-uint8_t  picsiz[MAXTILES], tilefilenum[MAXTILES];
+EXT_RAM_ATTR uint8_t  picsiz[MAXTILES], tilefilenum[MAXTILES];
 int32_t lastageclock;
-int32_t tilefileoffs[MAXTILES];
+EXT_RAM_ATTR int32_t tilefileoffs[MAXTILES];
 
 int32_t artsize = 0, cachesize = 0;
 
-static short radarang[1280], radarang2[MAXXDIM+1];
-static uint16_t sqrtable[4096], shlookup[4096+256];
+EXT_RAM_ATTR static short radarang[1280], radarang2[MAXXDIM+1];
+EXT_RAM_ATTR static uint16_t sqrtable[4096], shlookup[4096+256];
 uint8_t  pow2char[8] = {1,2,4,8,16,32,64,-128};
 int32_t pow2long[32] =
 {
@@ -91,12 +93,12 @@ int32_t pow2long[32] =
     16777216L,33554432L,67108864L,134217728L,
     268435456L,536870912L,1073741824L,2147483647L,
 };
-int32_t reciptable[2048], fpuasm;
+EXT_RAM_ATTR int32_t reciptable[2048], fpuasm;
 
-char  kensmessage[128];
+EXT_RAM_ATTR char  kensmessage[128];
 
-uint8_t  britable[16][64];
-uint8_t  textfont[1024], smalltextfont[1024];
+EXT_RAM_ATTR uint8_t  britable[16][64];
+EXT_RAM_ATTR uint8_t  textfont[1024], smalltextfont[1024];
 
 
 
@@ -120,7 +122,7 @@ typedef struct pvWall_s{
 } pvWall_t;
 
 // Potentially Visible walls are stored in this stack.
-pvWall_t pvWalls[MAXWALLSB];
+EXT_RAM_ATTR pvWall_t pvWalls[MAXWALLSB];
 
 
 
@@ -137,38 +139,39 @@ static short thesector[MAXWALLSB], thewall[MAXWALLSB];
 */
 
 // bunchWallsList contains the list of walls in a bunch.
-static short bunchWallsList[MAXWALLSB];
+EXT_RAM_ATTR static short bunchWallsList[MAXWALLSB];
 
-static short bunchfirst[MAXWALLSB], bunchlast[MAXWALLSB];
-
-
+EXT_RAM_ATTR static short bunchfirst[MAXWALLSB], bunchlast[MAXWALLSB];
 
 
 
 
 
-static short smost[MAXYSAVES], smostcnt;
-static short smoststart[MAXWALLSB];
-static uint8_t  smostwalltype[MAXWALLSB];
-static int32_t smostwall[MAXWALLSB], smostwallcnt = -1L;
 
-static short maskwall[MAXWALLSB], maskwallcnt;
-static int32_t spritesx[MAXSPRITESONSCREEN];
-static int32_t spritesy[MAXSPRITESONSCREEN+1];
-static int32_t spritesz[MAXSPRITESONSCREEN];
-static spritetype *tspriteptr[MAXSPRITESONSCREEN];
+
+EXT_RAM_ATTR static short smost[MAXYSAVES], smostcnt;
+EXT_RAM_ATTR static short smoststart[MAXWALLSB];
+EXT_RAM_ATTR static uint8_t  smostwalltype[MAXWALLSB];
+EXT_RAM_ATTR static int32_t smostwall[MAXWALLSB];
+static int32_t smostwallcnt = -1L;
+
+EXT_RAM_ATTR static short maskwall[MAXWALLSB], maskwallcnt;
+EXT_RAM_ATTR static int32_t spritesx[MAXSPRITESONSCREEN];
+EXT_RAM_ATTR static int32_t spritesy[MAXSPRITESONSCREEN+1];
+EXT_RAM_ATTR static int32_t spritesz[MAXSPRITESONSCREEN];
+EXT_RAM_ATTR static spritetype *tspriteptr[MAXSPRITESONSCREEN];
 
 //FCS: (up-most pixel on column x that can still be drawn to)
-short umost[MAXXDIM+1];
+EXT_RAM_ATTR short umost[MAXXDIM+1];
 
 //FCS: (down-most pixel +1 on column x that can still be drawn to)
-short dmost[MAXXDIM+1];
+EXT_RAM_ATTR short dmost[MAXXDIM+1];
 
-int16_t bakumost[MAXXDIM+1], bakdmost[MAXXDIM+1];
-short uplc[MAXXDIM+1], dplc[MAXXDIM+1];
-static int16_t uwall[MAXXDIM+1], dwall[MAXXDIM+1];
-static int32_t swplc[MAXXDIM+1], lplc[MAXXDIM+1];
-static int32_t swall[MAXXDIM+1], lwall[MAXXDIM+4];
+EXT_RAM_ATTR int16_t bakumost[MAXXDIM+1], bakdmost[MAXXDIM+1];
+EXT_RAM_ATTR short uplc[MAXXDIM+1], dplc[MAXXDIM+1];
+EXT_RAM_ATTR static int16_t uwall[MAXXDIM+1], dwall[MAXXDIM+1];
+EXT_RAM_ATTR static int32_t swplc[MAXXDIM+1], lplc[MAXXDIM+1];
+EXT_RAM_ATTR static int32_t swall[MAXXDIM+1], lwall[MAXXDIM+4];
 int32_t xdimen = -1, xdimenrecip, halfxdimen, xdimenscale, xdimscale;
 int32_t wx1, wy1, wx2, wy2, ydimen;
 int32_t viewoffset;
@@ -220,14 +223,14 @@ int32_t pageoffset, ydim16, qsetmode = 0;
 int32_t startposx, startposy, startposz;
 int16_t startang, startsectnum;
 int16_t pointhighlight, linehighlight, highlightcnt;
-static int32_t lastx[MAXYDIM];
+EXT_RAM_ATTR static int32_t lastx[MAXYDIM];
 uint8_t  paletteloaded = 0;
 
 #define FASTPALGRIDSIZ 8
-static int32_t rdist[129], gdist[129], bdist[129];
-static uint8_t  colhere[((FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2))>>3];
-static uint8_t  colhead[(FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2)];
-static int32_t colnext[256];
+EXT_RAM_ATTR static int32_t rdist[129], gdist[129], bdist[129];
+EXT_RAM_ATTR static uint8_t  colhere[((FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2))>>3];
+EXT_RAM_ATTR static uint8_t  colhead[(FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2)*(FASTPALGRIDSIZ+2)];
+EXT_RAM_ATTR static int32_t colnext[256];
 static uint8_t  coldist[8] = {0,1,2,3,4,3,2,1};
 static int32_t colscan[27];
 
@@ -237,9 +240,9 @@ int32_t hitscangoalx = (1<<29)-1, hitscangoaly = (1<<29)-1;
 typedef struct {
     int32_t x1, y1, x2, y2;
 } linetype;
-static linetype clipit[MAXCLIPNUM];
-static short clipsectorlist[MAXCLIPNUM], clipsectnum;
-static short clipobjectval[MAXCLIPNUM];
+EXT_RAM_ATTR static linetype clipit[MAXCLIPNUM];
+EXT_RAM_ATTR static short clipsectorlist[MAXCLIPNUM], clipsectnum;
+EXT_RAM_ATTR static short clipobjectval[MAXCLIPNUM];
 
 typedef struct
 {
@@ -249,7 +252,7 @@ typedef struct
     uint8_t  dapalnum, dastat, pagesleft;
     int32_t cx1, cy1, cx2, cy2;
 } permfifotype;
-static permfifotype permfifo[MAXPERMS];
+EXT_RAM_ATTR static permfifotype permfifo[MAXPERMS];
 static int32_t permhead = 0, permtail = 0;
 
 //FCS: Num walls to potentially render.
@@ -3557,7 +3560,7 @@ static void initfastcolorlookup(int32_t rscale, int32_t gscale, int32_t bscale)
     colscan[26] = i;
 }
 
-extern uint8_t lastPalette[768];
+EXT_RAM_ATTR extern uint8_t lastPalette[768];
 static void loadpalette(void)
 {
     int32_t k, fil;
@@ -4759,9 +4762,9 @@ static void ceilspritehline (int32_t x2, int32_t y)
     int32_t x1, v, bx, by;
 
     /*
-     * x = x1 + (x2-x1)t + (y1-y2)u  ³  x = 160v
-     * y = y1 + (y2-y1)t + (x2-x1)u  ³  y = (scrx-160)v
-     * z = z1 = z2                   ³  z = posz + (scry-horiz)v
+     * x = x1 + (x2-x1)t + (y1-y2)u  ï¿½  x = 160v
+     * y = y1 + (y2-y1)t + (x2-x1)u  ï¿½  y = (scrx-160)v
+     * z = z1 = z2                   ï¿½  z = posz + (scry-horiz)v
      */
 
     x1 = lastx[y];

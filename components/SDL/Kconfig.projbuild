@@ -133,5 +133,24 @@ config HW_LCD_BL_GPIO
 	default HW_LCD_BL_GPIO_CUST if HW_CUSTOM
 	default -1 if HW_WROVERKIT
 
+config HW_SD_PIN_NUM_MISO
+	int "SD Card MISO"
+	range 1 35
+	default 2
 
+config HW_SD_PIN_NUM_MOSI
+	int "SD Card MOSI"
+	range 1 35
+	default 13
+
+config HW_SD_PIN_NUM_CLK
+	int "SD Card CLK"
+	range 1 35
+	default 14
+
+config HW_SD_PIN_NUM_CS
+	int "SD Card CS"
+	range 1 35
+	default 15
+	
 endmenu

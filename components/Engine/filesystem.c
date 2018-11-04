@@ -16,7 +16,7 @@
 
 #include "esp_attr.h"
 
-EXT_RAM_ATTR char game_dir[512];
+extern char game_dir[512];
 
 //The multiplayer module in game.dll needs direct access to the crc32 (sic).
 int32_t groupefil_crc32[MAXGROUPFILES];

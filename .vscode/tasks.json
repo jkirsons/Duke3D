@@ -64,6 +64,15 @@
                 "base": "$gcc",
                 "fileLocation": "absolute"
             }
-        }              
+        },
+
+        {
+            "label": "idf_size.py",
+            "type": "shell",
+            "command": "~/esp/esp-idf/tools/idf_size.py build/Duke3D.map --files ",
+            "group": "build",
+            "problemMatcher": []
+        }      
+        
     ]
 }

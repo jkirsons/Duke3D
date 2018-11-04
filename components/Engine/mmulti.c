@@ -29,6 +29,8 @@
 
 #include "fixedPoint_math.h"
 
+#include "esp_attr.h"
+
 #define MAXPLAYERS 16
 #define BAKSIZ 16384
 #define SIMULATEERRORS 0
@@ -61,7 +63,7 @@ static long timeoutcount = 60, resendagaincount = 4, lastsendtime[MAXPLAYERS];
 extern unsigned short g_bStun;
 
 static short bakpacketptr[MAXPLAYERS][256], bakpacketlen[MAXPLAYERS][256];
-static char bakpacketbuf[BAKSIZ];
+EXT_RAM_ATTR static char bakpacketbuf[BAKSIZ];
 static long bakpacketplc = 0;
 
 short myconnectindex, numplayers;
@@ -85,7 +87,7 @@ typedef struct
 	char buffer[MAXPACKETSIZE];
 	long longcalladdress;
 } gcomtype;
-static gcomtype *gcom;
+EXT_RAM_ATTR static gcomtype *gcom;
 
 /*
 //

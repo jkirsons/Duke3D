@@ -524,7 +524,7 @@ extern int32_t impact_damage,respawnactortime,respawnitemtime;
 
 extern EXT_RAM_ATTR short spriteq[1024];
 extern short spriteqloc,spriteqamount;
-extern struct player_struct ps[MAXPLAYERS];
+extern EXT_RAM_ATTR struct player_struct ps[MAXPLAYERS];
 extern struct player_orig po[MAXPLAYERS];
 extern struct user_defs ud;
 

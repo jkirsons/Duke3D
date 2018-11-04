@@ -31,9 +31,6 @@ EXTERN int32_t numtiles, picanm[MAXTILES];
 EXTERN uint8_t* waloff[MAXTILES];
 */
 
-
-
-
 typedef struct dimensions_s{
     short width;
     short height;
@@ -46,8 +43,8 @@ typedef struct tile_s{
     uint8_t* data;
 } tile_t;
 
+extern tile_t *tiles;//[MAXTILES];
 
-extern EXT_RAM_ATTR tile_t tiles[MAXTILES];
 
 void setviewtotile(short tilenume, int32_t tileWidth, int32_t tileHeight);
 void squarerotatetile(short tilenume);

@@ -55,6 +55,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "global.h"
 
+#include "SDL.h"
+#include "esp_attr.h"
 
 #define MINITEXT_BLUE	0
 #define MINITEXT_RED	2
@@ -3080,8 +3082,8 @@ void drawbackground(void)
 #define FOFTILE 13
 #define FOFTILEX 32
 #define FOFTILEY 32
-int32_t tempsectorz[MAXSECTORS];
-int32_t tempsectorpicnum[MAXSECTORS];
+EXT_RAM_ATTR int32_t tempsectorz[MAXSECTORS];
+EXT_RAM_ATTR int32_t tempsectorpicnum[MAXSECTORS];
 //short tempcursectnum;
 
 static void SE40_Draw(int spnum,int32_t x,int32_t y,int32_t z,short a,short h,int32_t smoothratio)
@@ -6123,7 +6125,7 @@ void animatesprites(int32_t x,int32_t y,short a,int32_t smoothratio)
 
 
 #define NUMCHEATCODES 26
-uint8_t  cheatquotes[NUMCHEATCODES][14] = {
+const uint8_t  cheatquotes[NUMCHEATCODES][14] = {
     {"cornholio"},	// 0
     {"stuff"},		// 1
     {"scotty###"},	// 2
@@ -8075,16 +8077,17 @@ void findGRPToUse(char * groupfilefullpath){
     printf("Scanning directory '%s' for a GRP file like '%s'.\n",directoryToScan,baseDir);
     
     DIR* dir =  opendir(directoryToScan);
-    
+    printf("opendir %p\n", dir);
     while ((dirEntry = readdir(dir)) != NULL)
     {
-        
+        printf("readdir\n");
 #ifdef __linux__
         if (dukeGRP_Match(dirEntry->d_name, _D_EXACT_NAMLEN(dirEntry)))
 #else
         if (dukeGRP_Match(dirEntry->d_name,strlen(dirEntry->d_name)))//dirEntry->d_namlen))
 #endif
         {
+            printf("dukeGRP_Match\n");
             sprintf(groupfilefullpath,"%s",dirEntry->d_name);
             return;
         }
@@ -8144,6 +8147,8 @@ int main(int argc,char  **argv)
 	//		"it. Please report new bugs at xd@m-klein.com or on DX forums. Thx!\n\n");
 	
 	printf("*** Chocolate DukeNukem3D v%d.%d ***\n\n", CHOCOLATE_DUKE_REV_X, CHOCOLATE_DUKE_REV_DOT_Y);
+    
+    SDL_InitSD();
 
 	// FIX_00033: Fake multi and AI are now fully working
 	ud.multimode = 1;  // xduke: must be done before checkcommandline or that will prevent Fakeplayer and AI

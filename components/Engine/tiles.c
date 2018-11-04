@@ -15,7 +15,7 @@
 
 char  artfilename[20];
 
-EXT_RAM_ATTR tile_t tiles[MAXTILES];
+tile_t *tiles;//[MAXTILES];
 
 int32_t numTiles;
 

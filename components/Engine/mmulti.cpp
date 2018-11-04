@@ -21,6 +21,8 @@ extern "C"
 #include "signal.h"
 #include "mmulti_stable.h"
 
+#include "esp_attr.h"
+
 #define MAXPLAYERS 16
 #define BAKSIZ 16384
 #define SIMULATEERRORS 0
@@ -58,7 +60,7 @@ extern long totalclock;  /* MUST EXTERN 1 ANNOYING VARIABLE FROM GAME */
 static long timeoutcount = 60, resendagaincount = 4, lastsendtime[MAXPLAYERS];
 
 static short bakpacketptr[MAXPLAYERS][256], bakpacketlen[MAXPLAYERS][256];
-static char bakpacketbuf[BAKSIZ];
+EXT_RAM_ATTR static char bakpacketbuf[BAKSIZ];
 static long bakpacketplc = 0;
 
 short myconnectindex, numplayers;
@@ -86,7 +88,7 @@ typedef struct
 } gcomtype;
 static gcomtype *gcom;
 
-gcomtype g_LastPersonalPacket;
+EXT_RAM_ATTR gcomtype g_LastPersonalPacket;
 
 typedef struct 
 {
@@ -95,7 +97,7 @@ typedef struct
 	unsigned char buffer[MAXPACKETSIZE];
 }PACKET;
 
-typedef std::vector<PACKET> PacketQueue;
+EXT_RAM_ATTR typedef std::vector<PACKET> PacketQueue;
 PacketQueue incommingPacketQueue;
 
 //typedef std::vector<PACKET> PacketQueue;

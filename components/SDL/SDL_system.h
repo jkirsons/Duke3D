@@ -5,6 +5,10 @@
 #include "freertos/task.h"
 #include "SDL_stdinc.h"
 
+#include "esp_vfs_fat.h"
+#include "driver/sdmmc_host.h"
+#include "driver/sdspi_host.h"
+
 typedef struct {
     Uint8 major;
     Uint8 minor;
@@ -42,5 +46,8 @@ void SDL_DestroyMutex(SDL_mutex* mutex);
 SDL_mutex* SDL_CreateMutex(void);
 int SDL_LockMutex(SDL_mutex* mutex);
 int SDL_UnlockMutex(SDL_mutex* mutex);
+
+#define MODE_SPI 1
+void SDL_InitSD(void);
 
 #endif

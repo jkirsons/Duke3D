@@ -130,7 +130,7 @@ uint8_t  numplayersprites,earthquaketime;
 
 int32_t fricxv,fricyv;
 struct player_orig po[MAXPLAYERS];
-struct player_struct ps[MAXPLAYERS];
+EXT_RAM_ATTR struct player_struct ps[MAXPLAYERS];
 struct user_defs ud;
 
 uint8_t  pus, pub;

@@ -143,7 +143,7 @@ void KB_ClearKeysDown( void )
 	keyIsWaiting = false;
 }
 
-static struct {
+const static struct {
 	char * name;
 	int code;
 } keyname2scancode[] = {

@@ -49,7 +49,7 @@ void FixFilePath(char  *filename);
 void lotsofmail(spritetype *s, short n);
 void lotsofpaper(spritetype *s, short n);
 
-char  *keyw[NUMKEYWORDS] =
+const char  *keyw[NUMKEYWORDS] =
 {
     "definelevelname",  // 0
     "actor",            // 1    [#]

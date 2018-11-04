@@ -3648,6 +3648,7 @@ void initengine(void)
     for(i=0; i<MAXPALOOKUPS; i++)
         palookup[i] = NULL;
 
+    tiles = malloc(sizeof(tile_t) * MAXTILES);
     for(i=0 ; i < MAXTILES ; i++)
         tiles[i].data = NULL;
 
@@ -4831,7 +4832,7 @@ static void drawsprite (int32_t snum)
     sectortype *sec;
     int32_t startum, startdm, sectnum, xb, yp, cstat;
     int32_t siz, xsiz, ysiz, xoff, yoff;
-    dimensions_t spriteDim;
+    struct dimensions_s spriteDim;
     int32_t x1, y1, x2, y2, lx, rx, dalx2, darx2, i, j, k, x, linum, linuminc;
     int32_t yinc, z, z1, z2, xp1, yp1, xp2, yp2;
     int32_t xv, yv, top, topinc, bot, botinc, hplc, hinc;

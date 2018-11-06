@@ -23,7 +23,8 @@ void SDL_UpdateRect(SDL_Surface *screen, Sint32 x, Sint32 y, Sint32 w, Sint32 h)
 
 SDL_VideoInfo *SDL_GetVideoInfo(void)
 {
-    return NULL;
+    SDL_VideoInfo *info = malloc(sizeof(SDL_VideoInfo));
+    return info;
 }
 
 char *SDL_VideoDriverName(char *namebuf, int maxlen)

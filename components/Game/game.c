@@ -8067,8 +8067,8 @@ void findGRPToUse(char * groupfilefullpath){
     if (getGameDir()[0] != '\0')
     {
         strcat(directoryToScan,getGameDir());
-        if (directoryToScan[strlen(directoryToScan)-1] != '/')
-            strcat(directoryToScan,"/");
+        //if (directoryToScan[strlen(directoryToScan)-1] != '/')
+        //    strcat(directoryToScan,"/");
     }
     else{
         strcat(directoryToScan, "./");    
@@ -8078,9 +8078,13 @@ void findGRPToUse(char * groupfilefullpath){
     
     DIR* dir =  opendir(directoryToScan);
     printf("opendir %p\n", dir);
+
+    if (directoryToScan[strlen(directoryToScan)-1] != '/')
+        strcat(directoryToScan,"/");
+
     while ((dirEntry = readdir(dir)) != NULL)
     {
-        printf("readdir\n");
+        printf("readdir: %s\n", dirEntry->d_name);
 #ifdef __linux__
         if (dukeGRP_Match(dirEntry->d_name, _D_EXACT_NAMLEN(dirEntry)))
 #else
@@ -8088,7 +8092,7 @@ void findGRPToUse(char * groupfilefullpath){
 #endif
         {
             printf("dukeGRP_Match\n");
-            sprintf(groupfilefullpath,"%s",dirEntry->d_name);
+            sprintf(groupfilefullpath,"%s%s",directoryToScan, dirEntry->d_name);
             return;
         }
         

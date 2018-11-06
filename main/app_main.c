@@ -24,5 +24,5 @@ void dukeTask(void *pvParameters)
 
 void app_main(void)
 {
-	xTaskCreatePinnedToCore(&dukeTask, "dukeTask", 28000, NULL, 5, NULL, 0);
+	xTaskCreatePinnedToCore(&dukeTask, "dukeTask", 24000, NULL, 5, NULL, 0);
 }

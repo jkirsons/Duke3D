@@ -37,19 +37,21 @@ void SDL_Quit(void)
 
 void SDL_InitSD(void)
 {
-#if MODE_SPI == 1
+#if 1
 	sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+    host.command_timeout_ms = 1500;
     sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
     slot_config.gpio_miso = CONFIG_HW_SD_PIN_NUM_MISO;
     slot_config.gpio_mosi = CONFIG_HW_SD_PIN_NUM_MOSI;
     slot_config.gpio_sck  = CONFIG_HW_SD_PIN_NUM_CLK;
     slot_config.gpio_cs   = CONFIG_HW_SD_PIN_NUM_CS;
 	slot_config.dma_channel = 1; //2
+
 #else
 	sdmmc_host_t host = SDMMC_HOST_DEFAULT();
 	host.flags = SDMMC_HOST_FLAG_1BIT;
 	//host.max_freq_khz = SDMMC_FREQ_HIGHSPEED;
-	host.command_timeout_ms=500;
+	host.command_timeout_ms=1500;
 	sdmmc_slot_config_t slot_config = SDMMC_SLOT_CONFIG_DEFAULT();
 	slot_config.width = 1;
 #endif
@@ -70,7 +72,7 @@ void SDL_InitSD(void)
         return;
     }
     fprintf(stderr, "Init_SD: SD card opened.\n");
-    vTaskDelay( 500 / portTICK_PERIOD_MS );
+    vTaskDelay( 1000 / portTICK_PERIOD_MS );
 	//sdmmc_card_print_info(stdout, card);    
 }
 

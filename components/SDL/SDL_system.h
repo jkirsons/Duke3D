@@ -4,6 +4,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "SDL_stdinc.h"
+#include "SDL.h"
 
 #include "esp_vfs_fat.h"
 #include "driver/sdmmc_host.h"

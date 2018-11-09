@@ -8352,7 +8352,7 @@ int main(int argc,char  **argv)
     printf("genspriteremaps()\n");
     genspriteremaps();
 
-
+    printf("setbrightness()\n");
     setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0]);
 
     if(KB_KeyPressed( sc_Escape ) ) 
@@ -8375,7 +8375,7 @@ int main(int argc,char  **argv)
             ud.warp_on = 0;
     }
 
-    
+    printf("MAIN_LOOP_RESTART\n");
 
     MAIN_LOOP_RESTART:
 

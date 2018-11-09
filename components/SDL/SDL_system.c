@@ -27,6 +27,8 @@ char *SDL_GetError(void)
 
 int SDL_Init(Uint32 flags)
 {
+    if(flags == SDL_INIT_VIDEO)
+        SDL_InitSubSystem(flags);
     return 0;
 }
 
@@ -39,7 +41,7 @@ void SDL_InitSD(void)
 {
 #if 1
 	sdmmc_host_t host = SDSPI_HOST_DEFAULT();
-    host.command_timeout_ms = 1500;
+    host.command_timeout_ms = 3000;
     sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
     slot_config.gpio_miso = CONFIG_HW_SD_PIN_NUM_MISO;
     slot_config.gpio_mosi = CONFIG_HW_SD_PIN_NUM_MOSI;
@@ -57,28 +59,25 @@ void SDL_InitSD(void)
 #endif
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 10
+        .max_files = 2
     };
+    vTaskDelay( 1000 / portTICK_PERIOD_MS );
 
 	sdmmc_card_t* card;
-    esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sd", &host, &slot_config, &mount_config, &card);
+    ESP_ERROR_CHECK(esp_vfs_fat_sdmmc_mount("/sd", &host, &slot_config, &mount_config, &card));
 
-    if (ret != ESP_OK) {
-        if (ret == ESP_FAIL) {
-        	fprintf(stderr, "Init_SD: Failed to mount filesystem.\n");
-        } else {
-        	fprintf(stderr, "Init_SD: Failed to initialize the card. %d\n", ret);
-        }
-        return;
-    }
     fprintf(stderr, "Init_SD: SD card opened.\n");
-    vTaskDelay( 1000 / portTICK_PERIOD_MS );
+    vTaskDelay( 500 / portTICK_PERIOD_MS );
 	//sdmmc_card_print_info(stdout, card);    
 }
 
 const SDL_version* SDL_Linked_Version()
 {
-    return "";
+    SDL_version *vers = malloc(sizeof(SDL_version));
+    vers->major = SDL_MAJOR_VERSION;                 
+    vers->minor = SDL_MINOR_VERSION;                 
+    vers->patch = SDL_PATCHLEVEL;      
+    return vers;
 }
 
 char *** allocateTwoDimenArrayOnHeapUsingMalloc(int row, int col)

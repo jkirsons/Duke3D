@@ -78,6 +78,7 @@ char  game_dir[512] = { "/sd/duke3d\0" };
 
 void initcache(uint8_t* dacachestart, int32_t dacachesize)
 {
+	printf("Initcache: %d bytes, at: %p\n",dacachesize, dacachestart);
 	int32_t i;
 
 	for(i=1;i<200;i++) lockrecip[i] = (1<<28)/(200-i);
@@ -217,19 +218,22 @@ void reportandexit(char  *errormessage)
 	int32_t i, j;
 
 	setvmode(0x3);
+	printf("Cachesize = %d\n",cachesize);
+	printf("Cacnum = %d\n",cacnum);
+	printf("ERROR: %s",errormessage);
 	j = 0;
 	for(i=0;i<cacnum;i++)
 	{
 		printf("%d- ",i);
-		printf("ptr: 0x%x, ",(int8_t)*cac[i].hand);
-		printf("leng: %d, ",cac[i].leng);
-		printf("lock: %d\n",*cac[i].lock);
-		j += cac[i].leng;
+		if(cac[i].hand != NULL)
+		{
+			printf("ptr: 0x%x, ",(int8_t)*cac[i].hand);
+			printf("leng: %d, ",cac[i].leng);
+			printf("lock: %d\n",*cac[i].lock);
+			j += cac[i].leng;
+		}
 	}
-	printf("Cachesize = %d\n",cachesize);
-	printf("Cacnum = %d\n",cacnum);
 	printf("Cache length sum = %d\n",j);
-	printf("ERROR: %s",errormessage);
 	Error(EXIT_FAILURE, "");
 }
 

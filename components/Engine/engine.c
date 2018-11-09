@@ -3582,7 +3582,7 @@ static void loadpalette(void)
     kread16(fil,&numpalookups);
     
     //CODE EXPLORATION
-    //printf("Num palettes lookup: %d.\n",numpalookups);
+    printf("Num palettes lookup: %d.\n",numpalookups);
     
     if ((palookup[0] = (uint8_t  *)kkmalloc(numpalookups<<8)) == NULL)
         allocache(&palookup[0],numpalookups<<8,&permanentlock);
@@ -8201,6 +8201,7 @@ static int getclosestcol(int32_t r, int32_t g, int32_t b)
 void makepalookup(int32_t palnum, uint8_t  *remapbuf, int8_t r,
                   int8_t g, int8_t b, uint8_t  dastat)
 {
+    //printf("makepalookup %d\n",palnum);
     int32_t i, j, palscale;
     uint8_t  *ptr, *ptr2;
 

@@ -34,8 +34,8 @@ char *SDL_VideoDriverName(char *namebuf, int maxlen)
 
 SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags)
 {
-    SDL_Rect rect = {0,0,320,240};
-    return &rect;
+    SDL_Rect rect[1] = {{0,0,320,240}};
+    return rect;
 }
 
 void SDL_WM_SetCaption(const char *title, const char *icon)

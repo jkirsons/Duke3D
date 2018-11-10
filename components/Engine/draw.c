@@ -54,7 +54,7 @@ void sethlinesizes(int32_t i1, int32_t _bits, uint8_t * textureAddress)
 
 //FCS:   Draw ceiling/floors
 //Draw a line from destination in the framebuffer to framebuffer-numPixels
-void hlineasm4(int32_t numPixels, int32_t shade, uint32_t i4, uint32_t i5, uint8_t *dest){
+IRAM_ATTR void hlineasm4(int32_t numPixels, int32_t shade, uint32_t i4, uint32_t i5, uint8_t *dest){
 
     int32_t shifter = ((256-machxbits_al) & 0x1f);
     uint32_t source;
@@ -102,7 +102,7 @@ void setuprhlineasm4(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5,
 } 
 
 
-void rhlineasm4(int32_t i1, uint8_t* texture, int32_t i3, uint32_t i4, uint32_t i5, int32_t dest)
+IRAM_ATTR void rhlineasm4(int32_t i1, uint8_t* texture, int32_t i3, uint32_t i4, uint32_t i5, int32_t dest)
 {
     uint32_t ebp = dest - i1;
     uint32_t rmach6b = ebp-1;
@@ -152,7 +152,7 @@ void setuprmhlineasm4(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t ti
 
 
 //FCS: ????
-void rmhlineasm4(int32_t i1, intptr_t shade, int32_t colorIndex, int32_t i4, int32_t i5, int32_t dest)
+IRAM_ATTR void rmhlineasm4(int32_t i1, intptr_t shade, int32_t colorIndex, int32_t i4, int32_t i5, int32_t dest)
 {
     uint32_t ebp = dest - i1;
     uint32_t rmach6b = ebp-1;
@@ -207,7 +207,7 @@ void setBytesPerLine(int32_t _bytesperline)
 static uint8_t  mach3_al;
 
 //FCS:  RENDER TOP AND BOTTOM COLUMN
-int32_t prevlineasm1(int32_t i1, uint8_t* palette, int32_t i3, int32_t i4, uint8_t  *source, uint8_t  *dest)
+IRAM_ATTR int32_t prevlineasm1(int32_t i1, uint8_t* palette, int32_t i3, int32_t i4, uint8_t  *source, uint8_t  *dest)
 {
 
 
@@ -233,7 +233,7 @@ int32_t prevlineasm1(int32_t i1, uint8_t* palette, int32_t i3, int32_t i4, uint8
 
 
 //FCS: This is used to draw wall border vertical lines
-int32_t vlineasm1(int32_t vince, uint8_t* palookupoffse, int32_t numPixels, int32_t vplce, uint8_t* texture, uint8_t* dest)
+IRAM_ATTR int32_t vlineasm1(int32_t vince, uint8_t* palookupoffse, int32_t numPixels, int32_t vplce, uint8_t* texture, uint8_t* dest)
 {
     uint32_t temp;
 
@@ -258,7 +258,7 @@ int32_t vlineasm1(int32_t vince, uint8_t* palookupoffse, int32_t numPixels, int3
 } 
 
 
-int32_t tvlineasm1(int32_t i1, uint8_t  * texture, int32_t numPixels, int32_t i4, uint8_t  *source, uint8_t  *dest)
+IRAM_ATTR int32_t tvlineasm1(int32_t i1, uint8_t  * texture, int32_t numPixels, int32_t i4, uint8_t  *source, uint8_t  *dest)
 {
     uint8_t shiftValue = (globalshiftval & 0x1f);
     
@@ -305,7 +305,7 @@ void setuptvlineasm2(int32_t i1, int32_t i2, int32_t i3)
 } /* */
 
 
-void tvlineasm2(uint32_t i1, uint32_t i2, uintptr_t i3, uintptr_t i4, uint32_t i5, uintptr_t i6)
+IRAM_ATTR void tvlineasm2(uint32_t i1, uint32_t i2, uintptr_t i3, uintptr_t i4, uint32_t i5, uintptr_t i6)
 {
 	uint32_t ebp = i1;
 	uint32_t tran2inca = i2;
@@ -372,7 +372,7 @@ void tvlineasm2(uint32_t i1, uint32_t i2, uintptr_t i3, uintptr_t i4, uint32_t i
 
 
 static uint8_t  machmv;
-int32_t mvlineasm1(int32_t vince, uint8_t* palookupoffse, int32_t i3, int32_t vplce, uint8_t* texture, uint8_t  *dest)
+IRAM_ATTR int32_t mvlineasm1(int32_t vince, uint8_t* palookupoffse, int32_t i3, int32_t vplce, uint8_t* texture, uint8_t  *dest)
 {
     uint32_t temp;
 
@@ -400,7 +400,7 @@ void setupvlineasm(int32_t i1)
 }
 
 //FCS This is used to fill the inside of a wall (so it draws VERTICAL column, always).
-void vlineasm4(int32_t columnIndex, intptr_t framebuffer)
+IRAM_ATTR void vlineasm4(int32_t columnIndex, intptr_t framebuffer)
 {
 
 	if (!RENDER_DRAW_WALL_INSIDE)
@@ -440,7 +440,7 @@ void setupmvlineasm(int32_t i1)
 } 
 
 
-void mvlineasm4(int32_t column, intptr_t framebufferOffset)
+IRAM_ATTR void mvlineasm4(int32_t column, intptr_t framebufferOffset)
 {
     int i;
     uint32_t temp;
@@ -504,7 +504,7 @@ static int32_t smach_eax;
 static int32_t smach2_eax;
 static int32_t smach5_eax;
 static int32_t smach_ecx;
-void setupspritevline(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6)
+IRAM_ATTR void setupspritevline(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6)
 {
     spal_eax = i1;
     smach_eax = (i5<<16);
@@ -514,7 +514,7 @@ void setupspritevline(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5
 } 
 
 
-void spritevline(int32_t i1, uint32_t i2, int32_t i3, uint32_t i4, uint8_t* source, uint8_t* dest)
+IRAM_ATTR void spritevline(int32_t i1, uint32_t i2, int32_t i3, uint32_t i4, uint8_t* source, uint8_t* dest)
 {
     
 
@@ -561,7 +561,7 @@ static int32_t msmach_eax;
 static int32_t msmach2_eax;
 static int32_t msmach5_eax;
 static int32_t msmach_ecx;
-void msetupspritevline(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6)
+IRAM_ATTR void msetupspritevline(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i5, int32_t i6)
 {
     mspal_eax = i1;
     msmach_eax = (i5<<16);
@@ -571,7 +571,7 @@ void msetupspritevline(int32_t i1, int32_t i2, int32_t i3, int32_t i4, int32_t i
 } 
 
 
-void mspritevline(int32_t colorIndex, int32_t i2, int32_t i3, int32_t i4, uint8_t  * source, uint8_t  * dest)
+IRAM_ATTR void mspritevline(int32_t colorIndex, int32_t i2, int32_t i3, int32_t i4, uint8_t  * source, uint8_t  * dest)
 {
  
 setup:
@@ -622,7 +622,7 @@ uint32_t tsmach_eax1;
 uint32_t adder;
 uint32_t tsmach_eax3;
 uint32_t tsmach_ecx;
-void tsetupspritevline(uint8_t * palette, int32_t i2, int32_t i3, int32_t i4, int32_t i5)
+IRAM_ATTR void tsetupspritevline(uint8_t * palette, int32_t i2, int32_t i3, int32_t i4, int32_t i5)
 {
 	tspal = palette;
 	tsmach_eax1 = i5 << 16;
@@ -635,7 +635,7 @@ void tsetupspritevline(uint8_t * palette, int32_t i2, int32_t i3, int32_t i4, in
 /*
  FCS: Draw a sprite vertical line of pixels.
  */
-void DrawSpriteVerticalLine(int32_t i2, int32_t numPixels, uint32_t i4, uint8_t  * texture, uint8_t  * dest)
+IRAM_ATTR void DrawSpriteVerticalLine(int32_t i2, int32_t numPixels, uint32_t i4, uint8_t  * texture, uint8_t  * dest)
 {
     uint8_t colorIndex;
     

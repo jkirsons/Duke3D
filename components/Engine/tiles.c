@@ -12,6 +12,7 @@
 #include "filesystem.h"
 
 #include "esp_attr.h"
+#include "esp_heap_caps.h"
 
 char  artfilename[20];
 
@@ -268,7 +269,8 @@ int loadpics(char  *filename, char * gamedir)
     clearbuf(gotpic,(MAXTILES+31)>>5,0L);
     
     /* try dpmi_DETERMINEMAXREALALLOC! */
-    
+    heap_caps_print_heap_info(MALLOC_CAP_SPIRAM);
+
     cachesize = max(artsize,1048576);
     while ((pic = (uint8_t  *)kkmalloc(cachesize)) == NULL)
     {

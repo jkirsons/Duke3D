@@ -4383,7 +4383,7 @@ void nextpage(void)
 
 
 
-int clipinsidebox(int32_t x, int32_t y, short wallnum, int32_t walldist)
+IRAM_ATTR int clipinsidebox(int32_t x, int32_t y, short wallnum, int32_t walldist)
 {
     walltype *wal;
     int32_t x1, y1, x2, y2, r;
@@ -4418,7 +4418,7 @@ int clipinsidebox(int32_t x, int32_t y, short wallnum, int32_t walldist)
     return((x2 >= y2)<<1);
 }
 
-static int clipinsideboxline(int32_t x, int32_t y, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t walldist)
+IRAM_ATTR static int clipinsideboxline(int32_t x, int32_t y, int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t walldist)
 {
     int32_t r;
 
@@ -4452,7 +4452,7 @@ static int clipinsideboxline(int32_t x, int32_t y, int32_t x1, int32_t y1, int32
 }
 
 
-void drawline256 (int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t  col)
+IRAM_ATTR void drawline256 (int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t  col)
 {
     int32_t dx, dy, i, j, inc, plc, daend;
     uint8_t* p;
@@ -4550,7 +4550,7 @@ void drawline256 (int32_t x1, int32_t y1, int32_t x2, int32_t y2, uint8_t  col)
  If it is an even nymber of time:(x,y) is outside the sector.
  */
 
-int inside(int32_t x, int32_t y, short sectnum)
+IRAM_ATTR int inside(int32_t x, int32_t y, short sectnum)
 {
     walltype *wal;
     int32_t i, x1, y1, x2, y2;

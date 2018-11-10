@@ -49,7 +49,6 @@ typedef struct grpSet_s{
 EXT_RAM_ATTR static grpSet_t grpSet;
 
 
-EXT_RAM_ATTR uint8_t         crcBuffer[ 1 << 20]     ;
 int32_t initgroupfile(const char  *filename)
 {
 	uint8_t         buf[16]                 ;
@@ -139,10 +138,12 @@ int32_t initgroupfile(const char  *filename)
 	//groupfil_memory[numgroupfiles] = malloc(i);
     
     //Load the full GRP in RAM.
-	while((j=read(archive->fileDescriptor, crcBuffer, sizeof(crcBuffer)))){
+	//uint8_t         crcBuffer[ 1 << 20]     ;
+	uint8_t *crcBuffer = malloc((1 << 20)*sizeof(uint8_t));
+	while((j=read(archive->fileDescriptor, crcBuffer, /*sizeof(crcBuffer)*/(1 << 20)*sizeof(uint8_t) ))){
 		archive->crc32 = crc32_update(crcBuffer,j,archive->crc32);
 	}
-    
+    free(crcBuffer);
     // The game layer seems to absolutely need to access an array int[4] groupefil_crc32
     // so we need to store the crc32 in there too.
     groupefil_crc32[grpSet.num] = archive->crc32;
@@ -267,7 +268,7 @@ typedef struct openFile_s{
 EXT_RAM_ATTR static openFile_t openFiles[MAXOPENFILES];
 
 int32_t kopen4load(const char  *filename, int openOnlyFromGRP){
-    
+    //printf("opening file: %s\n", filename);
 	int32_t     i, k;
     int32_t     newhandle;
 

@@ -18,7 +18,7 @@ void SDL_UnlockSurface(SDL_Surface* surface)
 
 void SDL_UpdateRect(SDL_Surface *screen, Sint32 x, Sint32 y, Sint32 w, Sint32 h)
 {
-
+    SDL_Flip(screen);
 }
 
 SDL_VideoInfo *SDL_GetVideoInfo(void)
@@ -29,13 +29,13 @@ SDL_VideoInfo *SDL_GetVideoInfo(void)
 
 char *SDL_VideoDriverName(char *namebuf, int maxlen)
 {
-    return "";
+    return "Gadget Workbench - Awesome SPI TFT Driver";
 }
 
 SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags)
 {
-    SDL_Rect rect[1] = {{0,0,320,240}};
-    return rect;
+    SDL_Rect rect[1] = {{0,0,320,200}};
+    return &rect;
 }
 
 void SDL_WM_SetCaption(const char *title, const char *icon)
@@ -98,6 +98,7 @@ SDL_Surface *SDL_CreateRGBSurface(Uint32 flags, int width, int height, int depth
     surface->clip_rect = rect;
     surface->refcount = 1;
     surface->pixels = heap_caps_malloc(width*height*1, MALLOC_CAP_SPIRAM);
+    memset(surface->pixels,0,(width*height/sizeof(surface->pixels)));
     if(primary_surface == NULL)
     	primary_surface = surface;
     return surface;

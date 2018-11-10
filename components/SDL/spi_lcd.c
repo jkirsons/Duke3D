@@ -282,7 +282,7 @@ void IRAM_ATTR displayTask(void *arg) {
         .max_transfer_sz=(MEM_PER_TRANS*2)+16
     };
     spi_device_interface_config_t devcfg={
-        .clock_speed_hz=40000000,               //Clock out at 26 MHz. Yes, that's heavily overclocked.
+        .clock_speed_hz=60000000,               //Clock out at 26 MHz. Yes, that's heavily overclocked.
         .mode=0,                                //SPI mode 0
         .spics_io_num=PIN_NUM_CS,               //CS pin
         .queue_size=NO_SIM_TRANS,               //We want to be able to queue this many transfers
@@ -312,18 +312,18 @@ void IRAM_ATTR displayTask(void *arg) {
 		trans[x].user=(void*)1;
 		trans[x].tx_buffer=&dmamem[x];
 	}
-	xSemaphoreGive(dispDoneSem);
+	//xSemaphoreGive(dispDoneSem);
 
 	while(1) {
-		xSemaphoreTake(dispSem, portMAX_DELAY);
+		//xSemaphoreTake(dispSem, portMAX_DELAY);
 //		printf("Display task: frame.\n");
 #ifndef DOUBLE_BUFFER
 		uint8_t *myData=(uint8_t*)currFbPtr;
 #endif
 
-		send_header_start(spi, 0, screen_boarder, 320, 240-screen_boarder);
+		send_header_start(spi, 0, screen_boarder, 320, 240-screen_boarder*2);
 		send_header_cleanup(spi);
-		for (x=0; x<320*240-screen_boarder*640; x+=MEM_PER_TRANS) {
+		for (x=0; x<320*(240-screen_boarder*2); x+=MEM_PER_TRANS) {
 #ifdef DOUBLE_BUFFER
 			for (i=0; i<MEM_PER_TRANS; i+=4) {
 				uint32_t d=currFbPtr[(x+i)/4];
@@ -355,7 +355,7 @@ void IRAM_ATTR displayTask(void *arg) {
 			}
 		}
 #ifndef DOUBLE_BUFFER
-		xSemaphoreGive(dispDoneSem);
+		//xSemaphoreGive(dispDoneSem);
 #endif
 		while(inProgress) {
 			ret=spi_device_get_trans_result(spi, &rtrans, portMAX_DELAY);
@@ -372,7 +372,7 @@ void IRAM_ATTR displayTask(void *arg) {
 
 void spi_lcd_wait_finish() {
 #ifndef DOUBLE_BUFFER
-	xSemaphoreTake(dispDoneSem, portMAX_DELAY);
+	//xSemaphoreTake(dispDoneSem, portMAX_DELAY);
 #endif
 }
 
@@ -389,17 +389,17 @@ void spi_lcd_send(uint16_t *scr) {
 void spi_lcd_send_boarder(uint16_t *scr, int boarder) {
 #ifdef DOUBLE_BUFFER
 	//memcpy(currFbPtr+(boarder*320/4), scr, 320*(240-boarder*2));
+    screen_boarder = boarder;
 	memcpy(currFbPtr, scr, 320*(240-boarder*2));
-	screen_boarder = boarder;
 #else
 	currFbPtr=scr;
 #endif
-	xSemaphoreGive(dispSem);
+	//xSemaphoreGive(dispSem);
 }
 
 void spi_lcd_clear() {
 #ifdef DOUBLE_BUFFER
-	memset(currFbPtr,0,320*240);
+	memset(currFbPtr,0,(320*240/sizeof(currFbPtr)));
 #endif
 	xSemaphoreGive(dispSem);
 }
@@ -409,8 +409,9 @@ void spi_lcd_init() {
     dispSem=xSemaphoreCreateBinary();
     dispDoneSem=xSemaphoreCreateBinary();
 #ifdef DOUBLE_BUFFER
-	//currFbPtr=pvPortMallocCaps(320*240, MALLOC_CAP_32BIT);
+    screen_boarder = 0;
     currFbPtr=heap_caps_malloc(320*240, MALLOC_CAP_32BIT);
+    memset(currFbPtr,0,(320*240));
 #endif
 #if CONFIG_FREERTOS_UNICORE
 	xTaskCreatePinnedToCore(&displayTask, "display", 6000, NULL, 6, NULL, 0);

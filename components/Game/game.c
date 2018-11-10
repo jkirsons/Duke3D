@@ -7504,16 +7504,18 @@ void Logo(void)
     soundanm = 0;
 
     ready2send = 0;
-
+    printf("KB_FlushKeyboardQueue()\n");
     KB_FlushKeyboardQueue();
 
     setview(0,0,xdim-1,ydim-1);
     clearview(0L);
     palto(0,0,0,63);
 
+    printf("flushperms()\n");
     flushperms();
     nextpage();
 
+    printf("MUSIC_StopSong()\n");
     MUSIC_StopSong();
 
 	if(ud.showcinematics && numplayers < 2)
@@ -7525,15 +7527,18 @@ void Logo(void)
 		    {
 		        getpackets();
 				
+                printf("playanm()\n");
 		        playanm("logo.anm",5);
+                printf("palto()\n");
 		        palto(0,0,0,63);
 		        KB_FlushKeyboardQueue();
 		    }
 		
+            printf("clearviewm()\n");
 		    clearview(0L);
 		    nextpage();
 		}
-		
+		printf("playmusic()\n");
 		//MIDI start here
 		playmusic(&env_music_fn[0][0]);
 		
@@ -8084,7 +8089,7 @@ void findGRPToUse(char * groupfilefullpath){
 
     while ((dirEntry = readdir(dir)) != NULL)
     {
-        printf("readdir: %s\n", dirEntry->d_name);
+        //printf("readdir: %s\n", dirEntry->d_name);
 #ifdef __linux__
         if (dukeGRP_Match(dirEntry->d_name, _D_EXACT_NAMLEN(dirEntry)))
 #else

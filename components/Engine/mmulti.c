@@ -63,7 +63,8 @@ static long timeoutcount = 60, resendagaincount = 4, lastsendtime[MAXPLAYERS];
 extern unsigned short g_bStun;
 
 static short bakpacketptr[MAXPLAYERS][256], bakpacketlen[MAXPLAYERS][256];
-EXT_RAM_ATTR static char bakpacketbuf[BAKSIZ];
+//EXT_RAM_ATTR 
+static char *bakpacketbuf;//[BAKSIZ];
 static long bakpacketplc = 0;
 
 short myconnectindex, numplayers;
@@ -170,6 +171,7 @@ long unstable_getcrc(char *buffer, short bufleng)
 
 void unstable_initmultiplayers(char damultioption, char dacomrateoption, char dapriority)
 {
+    bakpacketbuf = malloc(sizeof(char)*BAKSIZ);
 	long i;
 
 	unstable_initcrc();
@@ -352,6 +354,7 @@ void unstable_uninitmultiplayers(void)
 {
     deinit_network_transport(gcom);
     gcom = NULL;
+    free(bakpacketbuf);
 }
 
 void unstable_sendlogon(void)

@@ -459,7 +459,7 @@ char  *grpVersion2char(uint8_t  grp_to_identify)
 //This is a function from the Engine module, used in getpackets.
 void sampletimer(void);
 
-void getpackets(void)
+IRAM_ATTR void getpackets(void)
 {
     int32_t i, j, k, l;
     short other, packbufleng;
@@ -785,7 +785,7 @@ void getpackets(void)
 
 //From player.c
 void computergetinput(int32_t snum, input *syn);
-void faketimerhandler()
+IRAM_ATTR void faketimerhandler()
 {
     int32_t i, j, k;
     input *osyn, *nsyn;
@@ -2942,7 +2942,7 @@ void updatesectorz(int32_t x, int32_t y, int32_t z, short *sectnum)
     *sectnum = -1;
 }
 
-void view(struct player_struct *pp, int32_t *vx, int32_t *vy,int32_t *vz,short *vsectnum, short ang, short horiz)
+IRAM_ATTR void view(struct player_struct *pp, int32_t *vx, int32_t *vy,int32_t *vz,short *vsectnum, short ang, short horiz)
 {
      spritetype *sp;
      int32_t i, nx, ny, nz, hx, hy, hitx, hity, hitz;
@@ -3232,7 +3232,7 @@ static void se40code(int32_t x,int32_t y,int32_t z,int32_t a,int32_t h, int32_t 
 
 static int32_t oyrepeat=-1;
 
-void displayrooms(short snum,int32_t smoothratio)
+IRAM_ATTR void displayrooms(short snum,int32_t smoothratio)
 {
     int32_t cposx,cposy,cposz,dst,j,fz,cz;
     short sect, cang, k, choriz;
@@ -8357,7 +8357,6 @@ int main(int argc,char  **argv)
     printf("genspriteremaps()\n");
     genspriteremaps();
 
-    printf("setbrightness()\n");
     setbrightness(ud.brightness>>2,&ps[myconnectindex].palette[0]);
 
     if(KB_KeyPressed( sc_Escape ) ) 
@@ -8379,8 +8378,6 @@ int main(int argc,char  **argv)
         if(j)
             ud.warp_on = 0;
     }
-
-    printf("MAIN_LOOP_RESTART\n");
 
     MAIN_LOOP_RESTART:
 

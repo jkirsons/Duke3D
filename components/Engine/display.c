@@ -1502,7 +1502,7 @@ void setcolor16(uint8_t col)
 	drawpixel_color = col;
 }
 
-void drawpixel16(int32_t offset)
+IRAM_ATTR void drawpixel16(int32_t offset)
 {
     drawpixel((uint8_t*)surface->pixels + offset, drawpixel_color);
 } /* drawpixel16 */
@@ -1545,7 +1545,7 @@ void fillscreen16(int32_t offset, int32_t color, int32_t blocksize)
 
 /* Most of this line code is taken from Abrash's "Graphics Programming Blackbook".
 Remember, sharing code is A Good Thing. AH */
-static __inline void DrawHorizontalRun (uint8_t  **ScreenPtr, int XAdvance, int RunLength, uint8_t  Color)
+IRAM_ATTR static __inline void DrawHorizontalRun (uint8_t  **ScreenPtr, int XAdvance, int RunLength, uint8_t  Color)
 {
     int i;
     uint8_t  *WorkingScreenPtr = *ScreenPtr;
@@ -1559,7 +1559,7 @@ static __inline void DrawHorizontalRun (uint8_t  **ScreenPtr, int XAdvance, int 
     *ScreenPtr = WorkingScreenPtr;
 }
 
-static __inline void DrawVerticalRun (uint8_t  **ScreenPtr, int XAdvance, int RunLength, uint8_t  Color)
+IRAM_ATTR static __inline void DrawVerticalRun (uint8_t  **ScreenPtr, int XAdvance, int RunLength, uint8_t  Color)
 {
     int i;
     uint8_t  *WorkingScreenPtr = *ScreenPtr;
@@ -1573,7 +1573,7 @@ static __inline void DrawVerticalRun (uint8_t  **ScreenPtr, int XAdvance, int Ru
     *ScreenPtr = WorkingScreenPtr;
 }
 
-void drawline16(int32_t XStart, int32_t YStart, int32_t XEnd, int32_t YEnd, uint8_t  Color)
+IRAM_ATTR void drawline16(int32_t XStart, int32_t YStart, int32_t XEnd, int32_t YEnd, uint8_t  Color)
 {
     int Temp, AdjUp, AdjDown, ErrorTerm, XAdvance, XDelta, YDelta;
     int WholeStep, InitialPixelCount, FinalPixelCount, i, RunLength;
@@ -1850,7 +1850,7 @@ void uninittimer(void)
 //
 // sampletimer() -- update totalclock
 //
-void sampletimer(void)
+IRAM_ATTR void sampletimer(void)
 {
 	int64_t i;
 	int32_t n;
@@ -1932,7 +1932,7 @@ int TIMER_GetPlatformTicksInOneSecond(int64_t* t)
     return 1;
 }
     
-void TIMER_GetPlatformTicks(int64_t* t)
+IRAM_ATTR void TIMER_GetPlatformTicks(int64_t* t)
 {
     *t = SDL_GetTicks();
 }

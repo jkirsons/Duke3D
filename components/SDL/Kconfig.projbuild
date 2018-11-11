@@ -80,23 +80,6 @@ config HW_LCD_RESET_GPIO_CUST
 	range 1 35
 	default 21
 
-config HW_LCD_BL_GPIO_CUST
-	int "LCD Backlight Enable pin"
-	depends on HW_CUSTOM
-	range 1 35
-	default 5
-
-config HW_INV_BL_CUST
-	bool "Invert backlight output"
-	default n
-	depends on HW_CUSTOM
-
-
-config HW_INV_BL
-	bool
-	default HW_INBV_BL_CUST if HW_CUSTOM
-	default n if HW_WROVERKIT_V1
-	default y if HW_WROVERKIT_V2
 
 config HW_LCD_MISO_GPIO
 	int
@@ -152,5 +135,34 @@ config HW_SD_PIN_NUM_CS
 	int "SD Card CS"
 	range 1 35
 	default 15
-	
+
+config HW_BUTTON_PIN_NUM_UP
+	int "UP Button
+	range 1 39
+	default 36
+
+config HW_BUTTON_PIN_NUM_DOWN
+	int "DOWN Button
+	range 1 39
+	default 34
+
+config HW_BUTTON_PIN_NUM_LEFT
+	int "LEFT Button
+	range 1 39
+	default 32
+
+config HW_BUTTON_PIN_NUM_RIGHT
+	int "RIGHT Button
+	range 1 39
+	default 39
+
+config HW_BUTTON_PIN_NUM_BUTTON1
+	int "BUTTON1 Button
+	range 1 39
+	default 33
+
+config HW_BUTTON_PIN_NUM_BUTTON2
+	int "BUTTON2 Button
+	range 1 39
+	default 35
 endmenu

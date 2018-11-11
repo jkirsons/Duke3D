@@ -623,7 +623,7 @@ void hitradius( short i, int32_t  r, int32_t  hp1, int32_t  hp2, int32_t  hp3, i
 }
 
 
-int movesprite(short spritenum, int32_t xchange, int32_t ychange, int32_t zchange, uint32_t cliptype)
+IRAM_ATTR int movesprite(short spritenum, int32_t xchange, int32_t ychange, int32_t zchange, uint32_t cliptype)
 {
     int32_t daz,h, oldx, oldy;
     short retval, dasectnum, cd;
@@ -710,7 +710,7 @@ int movesprite(short spritenum, int32_t xchange, int32_t ychange, int32_t zchang
 }
 
 
-short ssp(short i,uint32_t cliptype) //The set sprite function
+IRAM_ATTR short ssp(short i,uint32_t cliptype) //The set sprite function
 {
     spritetype *s;
     int32_t movetype;

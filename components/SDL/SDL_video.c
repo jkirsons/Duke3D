@@ -32,10 +32,11 @@ char *SDL_VideoDriverName(char *namebuf, int maxlen)
     return "Gadget Workbench - Awesome SPI TFT Driver";
 }
 
+
 SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags)
 {
-    SDL_Rect rect[1] = {{0,0,320,200}};
-    return &rect;
+    SDL_Rect mode[1] = {{0,0,320,200}};
+    return &mode;
 }
 
 void SDL_WM_SetCaption(const char *title, const char *icon)
@@ -53,7 +54,7 @@ SDL_Keymod SDL_GetModState(void)
     return (SDL_Keymod)0;
 }
 
-Uint32 SDL_GetTicks(void)
+IRAM_ATTR Uint32 SDL_GetTicks(void)
 {
     return esp_timer_get_time() / 1000;    
 }

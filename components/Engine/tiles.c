@@ -96,7 +96,7 @@ void squarerotatetile(short tilenume)
 
 //1. Lock a picture in the cache system.
 //2. Mark it as used in the bitvector tracker.
-void setgotpic(int32_t tilenume)
+IRAM_ATTR void setgotpic(int32_t tilenume)
 {
     if (tiles[tilenume].lock < 200)
         tiles[tilenume].lock = 199;

@@ -41,6 +41,11 @@
 
 #include "SDL_input.h"
 
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "driver/gpio.h"
+
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */
 #ifdef __cplusplus
@@ -690,3 +695,6 @@ extern DECLSPEC Uint32 SDLCALL SDL_RegisterEvents(int numevents);
 #endif /* _SDL_events_h */
 
 /* vi: set ts=4 sw=4 expandtab: */
+
+void inputInit();
+extern int keyMode;

@@ -31,6 +31,7 @@
 #include "tiles.h"
 
 #include "esp_attr.h"
+#include "esp_heap_caps.h"
 
 int32_t stereowidth = 23040, stereopixelwidth = 28, ostereopixelwidth = -1;
 int32_t stereomode = 0, visualpage, activepage, whiteband, blackband;
@@ -659,13 +660,13 @@ static void prepwall(int32_t z, walltype *wal)
 }
 
 
-static int32_t getpalookup(int32_t davis, int32_t dashade)
+IRAM_ATTR static int32_t getpalookup(int32_t davis, int32_t dashade)
 {
     return(min(max(dashade+(davis>>8),0),numpalookups-1));
 }
 
 
-static void hline (int32_t xr, int32_t yp)
+IRAM_ATTR static void hline (int32_t xr, int32_t yp)
 {
     int32_t xl, r, s;
 
@@ -683,7 +684,7 @@ static void hline (int32_t xr, int32_t yp)
 }
 
 
-static void slowhline (int32_t xr, int32_t yp)
+IRAM_ATTR static void slowhline (int32_t xr, int32_t yp)
 {
     int32_t xl, r;
 
@@ -1224,7 +1225,7 @@ static void florscan (int32_t x1, int32_t x2, int32_t sectnum)
  *
  *  --ryan.
  */
-static void wallscan(int32_t x1, int32_t x2,
+IRAM_ATTR static void wallscan(int32_t x1, int32_t x2,
                      int16_t *uwal, int16_t *dwal,
                      int32_t *swal, int32_t *lwal)
 {
@@ -1414,7 +1415,7 @@ static void wallscan(int32_t x1, int32_t x2,
 
 
 /* this renders masking sprites. See wallscan(). --ryan. */
-static void maskwallscan(int32_t x1, int32_t x2,
+IRAM_ATTR static void maskwallscan(int32_t x1, int32_t x2,
                          short *uwal, short *dwal,
                          int32_t *swal, int32_t *lwal)
 {
@@ -1576,7 +1577,7 @@ static void maskwallscan(int32_t x1, int32_t x2,
 }
 
 /* renders parallaxed skies/floors  --ryan. */
-static void parascan(int32_t dax1, int32_t dax2, int32_t sectnum,uint8_t  dastat, int32_t bunch)
+IRAM_ATTR static void parascan(int32_t dax1, int32_t dax2, int32_t sectnum,uint8_t  dastat, int32_t bunch)
 {
     sectortype *sec;
     int32_t j, k, l, m, n, x, z, wallnum, nextsectnum, globalhorizbak;
@@ -1926,7 +1927,7 @@ static void grouscan (int32_t dax1, int32_t dax2, int32_t sectnum, uint8_t  dast
 }
 
 
-static int owallmost(short *mostbuf, int32_t w, int32_t z)
+IRAM_ATTR static int owallmost(short *mostbuf, int32_t w, int32_t z)
 {
     int32_t bad, inty, xcross, y, yinc;
     int32_t s1, s2, s3, s4, ix1, ix2, iy1, iy2, t;
@@ -2642,7 +2643,7 @@ static void dosetaspect(void)
 
   Return: pvWallID1 in the potentially visible wall list is in front of pvWallID2 (in the same potentially visible list)
 */
-int wallfront(int32_t pvWallID1, int32_t pvWallID2)
+IRAM_ATTR int wallfront(int32_t pvWallID1, int32_t pvWallID2)
 {
     walltype *wal;
     int32_t x11, y11, x21, y21, x12, y12, x22, y22, dx, dy, t1, t2;
@@ -2731,7 +2732,7 @@ int wallfront(int32_t pvWallID1, int32_t pvWallID2)
 
 
 //Return 1 if bunch firstBunchID is in from of bunch secondBunchID.
-static int bunchfront(int32_t firstBunchID, int32_t secondBunchID)
+IRAM_ATTR static int bunchfront(int32_t firstBunchID, int32_t secondBunchID)
 {
     int32_t x1b1, x2b1, x1b2, x2b2;
 
@@ -3035,7 +3036,7 @@ void drawrooms(int32_t daposx, int32_t daposy, int32_t daposz,short daang, int32
 }
 
 
-static int spritewallfront (spritetype *s, int32_t w)
+IRAM_ATTR static int spritewallfront (spritetype *s, int32_t w)
 {
     walltype *wal;
     int32_t x1, y1;
@@ -3048,7 +3049,7 @@ static int spritewallfront (spritetype *s, int32_t w)
 }
 
 
-static void transmaskvline(int32_t x)
+IRAM_ATTR static void transmaskvline(int32_t x)
 {
     int32_t vplc, vinc, i, palookupoffs;
     intptr_t bufplc, p;
@@ -3080,7 +3081,7 @@ static void transmaskvline(int32_t x)
     transarea += y2v-y1v;
 }
 
-static void transmaskvline2 (int32_t x)
+IRAM_ATTR static void transmaskvline2 (int32_t x)
 {
     int32_t y1, y2, x2;
     intptr_t i;
@@ -3162,7 +3163,7 @@ static void transmaskvline2 (int32_t x)
     faketimerhandler();
 }
 
-static void transmaskwallscan(int32_t x1, int32_t x2)
+IRAM_ATTR static void transmaskwallscan(int32_t x1, int32_t x2)
 {
     int32_t x;
 
@@ -3648,7 +3649,7 @@ void initengine(void)
     for(i=0; i<MAXPALOOKUPS; i++)
         palookup[i] = NULL;
 
-    tiles = malloc(sizeof(tile_t) * MAXTILES);
+    tiles = heap_caps_malloc(sizeof(tile_t) * MAXTILES, MALLOC_CAP_SPIRAM);
     for(i=0 ; i < MAXTILES ; i++)
         tiles[i].data = NULL;
 
@@ -4336,7 +4337,7 @@ static void dorotatesprite (int32_t sx, int32_t sy, int32_t z, short a, short pi
 }
 
 
-void nextpage(void)
+IRAM_ATTR void nextpage(void)
 {
     int32_t i;
     permfifotype *per;
@@ -4603,7 +4604,7 @@ IRAM_ATTR int inside(int32_t x, int32_t y, short sectnum)
 }
 
 
-int getangle(int32_t xvect, int32_t yvect)
+IRAM_ATTR int getangle(int32_t xvect, int32_t yvect)
 {
     if ((xvect|yvect) == 0)
         return(0);
@@ -4621,8 +4622,7 @@ int getangle(int32_t xvect, int32_t yvect)
     return(((radarang[640-scale(160,xvect,yvect)]>>6)+512+((yvect<0)<<10))&2047);
 }
 
-
-int ksqrt(int32_t num)
+__inline int ksqrt(int32_t num)
 {
     return(nsqrtasm(num));
 }
@@ -4631,7 +4631,7 @@ int ksqrt(int32_t num)
 
 
 
-static void drawmaskwall(short damaskwallcnt)
+IRAM_ATTR static void drawmaskwall(short damaskwallcnt)
 {
     int32_t i, j, k, x, z, sectnum, z1, z2, lx, rx;
     sectortype *sec, *nsec;
@@ -4758,7 +4758,7 @@ static void drawmaskwall(short damaskwallcnt)
 
 
 
-static void ceilspritehline (int32_t x2, int32_t y)
+IRAM_ATTR static void ceilspritehline (int32_t x2, int32_t y)
 {
     int32_t x1, v, bx, by;
 
@@ -4789,7 +4789,7 @@ static void ceilspritehline (int32_t x2, int32_t y)
 }
 
 
-static void ceilspritescan (int32_t x1, int32_t x2)
+IRAM_ATTR static void ceilspritescan (int32_t x1, int32_t x2)
 {
     int32_t x, y1, y2, twall, bwall;
 
@@ -4826,7 +4826,7 @@ static void ceilspritescan (int32_t x1, int32_t x2)
     faketimerhandler();
 }
 
-static void drawsprite (int32_t snum)
+IRAM_ATTR static void drawsprite (int32_t snum)
 {
     spritetype *tspr;
     sectortype *sec;
@@ -5700,7 +5700,7 @@ static void drawsprite (int32_t snum)
 /*
      FCS: Draw every transparent sprites in Back To Front Order. Also draw decals on the walls...
  */
-void drawmasks(void)
+IRAM_ATTR void drawmasks(void)
 {
     int32_t i, j, k, l, gap, xs, ys, xp, yp, yoff, yspan;
     /* int32_t zs, zp; */
@@ -6811,7 +6811,7 @@ static void keepaway (int32_t *x, int32_t *y, int32_t w)
 }
 
 
-static int raytrace(int32_t x3, int32_t y3, int32_t *x4, int32_t *y4)
+IRAM_ATTR static int raytrace(int32_t x3, int32_t y3, int32_t *x4, int32_t *y4)
 {
     int32_t x1, y1, x2, y2, bot, topu, nintx, ninty, cnt, z, hitwall;
     int32_t x21, y21, x43, y43;
@@ -8046,7 +8046,7 @@ void flushperms(void)
 
 // Render a sprite on screen. This is used by the Engine but also the Game module
 // when drawing the HUD or the Weapon held by the player !!!
-void rotatesprite(int32_t sx, int32_t sy, int32_t z, short a, short picnum,
+IRAM_ATTR void rotatesprite(int32_t sx, int32_t sy, int32_t z, short a, short picnum,
                   int8_t dashade, uint8_t  dapalnum, uint8_t  dastat,
                   int32_t cx1, int32_t cy1, int32_t cx2, int32_t cy2)
 {
@@ -9042,13 +9042,13 @@ void clearallviews(int32_t dacol)
 }
 
 
-void plotpixel(int32_t x, int32_t y, uint8_t  col)
+IRAM_ATTR void plotpixel(int32_t x, int32_t y, uint8_t  col)
 {
     drawpixel(ylookup[y]+x+frameplace,(int32_t)col);
 }
 
 
-uint8_t  getpixel(int32_t x, int32_t y)
+IRAM_ATTR uint8_t  getpixel(int32_t x, int32_t y)
 {
     return(readpixel(ylookup[y]+x+frameplace));
 }
@@ -9140,7 +9140,7 @@ void completemirror(void)
 }
 
 
-int sectorofwall(short theline)
+IRAM_ATTR int sectorofwall(short theline)
 {
     int32_t i, gap;
 
@@ -9163,7 +9163,7 @@ int sectorofwall(short theline)
 }
 
 
-int getceilzofslope(short sectnum, int32_t dax, int32_t day)
+IRAM_ATTR int getceilzofslope(short sectnum, int32_t dax, int32_t day)
 {
     int32_t dx, dy, i, j;
     walltype *wal;
@@ -9179,7 +9179,7 @@ int getceilzofslope(short sectnum, int32_t dax, int32_t day)
 }
 
 
-int getflorzofslope(short sectnum, int32_t dax, int32_t day)
+IRAM_ATTR int getflorzofslope(short sectnum, int32_t dax, int32_t day)
 {
     int32_t dx, dy, i, j;
     walltype *wal;
@@ -9210,7 +9210,7 @@ int getflorzofslope(short sectnum, int32_t dax, int32_t day)
  a slope it requires more calculation
  
  */
-void getzsofslope(short sectnum, int32_t dax, int32_t day, int32_t *ceilz, int32_t *florz)
+IRAM_ATTR void getzsofslope(short sectnum, int32_t dax, int32_t day, int32_t *ceilz, int32_t *florz)
 {
     int32_t dx, dy, i, j;
     walltype *wal, *wal2;

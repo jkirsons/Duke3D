@@ -11,12 +11,6 @@
 #include "esp_heap_caps.h"
 #include "spi_lcd.h"
 
-#define SDL_SWSURFACE 1
-#define SDL_HWSURFACE 2
-
-#define SDL_HWPALETTE 1
-#define SDL_FULLSCREEN 1
-
 #define SDL_SaveBMP(surface, file) {}
 #define SDL_LoadBMP_RW(src, freesrc) {}
 

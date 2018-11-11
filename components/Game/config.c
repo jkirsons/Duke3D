@@ -214,11 +214,11 @@ int32 CONFIG_AnalogNameToNum( char  * func )
 void CONFIG_SetDefaults( void )
 {
    // sound
-   SoundToggle = 1;
-   MusicToggle = 1;
-   VoiceToggle = 1;
-   AmbienceToggle = 1;
-   OpponentSoundToggle = 1;
+   SoundToggle = 0;
+   MusicToggle = 0;
+   VoiceToggle = 0;
+   AmbienceToggle = 0;
+   OpponentSoundToggle = 0;
    FXVolume = 220;
    MusicVolume = 200;
    FXDevice = SoundScape;
@@ -231,7 +231,7 @@ void CONFIG_SetDefaults( void )
 
    // game
    ps[0].aim_mode = 0;
-   ud.screen_size = 8;
+   ud.screen_size = 20; //8
    ud.extended_screen_size = 0;
    ud.screen_tilting = 1;
    ud.brightness = 16;
@@ -239,8 +239,8 @@ void CONFIG_SetDefaults( void )
    ud.showweapons = 0;
    ud.tickrate = 0;
    ud.scrollmode = 0;
-   ud.shadows = 1;
-   ud.detail = 1;
+   ud.shadows = 0;
+   ud.detail = 0; //1
    ud.lockout = 0;
    ud.pwlockout[0] = '\0';
    ud.crosshair = 1;

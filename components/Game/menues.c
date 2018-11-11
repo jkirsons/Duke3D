@@ -1432,6 +1432,14 @@ void menus(void)
 	static int current_resolution = 0;
     char text[512];
     
+    // JK - with limited buttons, change key bindings in the menu
+    if( (ps[myconnectindex].gm&MODE_MENU) == 0 )
+    {
+        keyMode = 0;
+    } else {
+        keyMode = 1;
+    }
+
     getpackets();
 
     if(((ControllerType == controltype_keyboardandmouse)||

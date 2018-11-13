@@ -45,7 +45,6 @@
 //You want this, especially at higher framerates. The 2nd buffer is allocated in iram anyway, so isn't really in the way.
 #define DOUBLE_BUFFER
 
-
 /*
  The LCD needs a bunch of command/argument values to be initialized. They are stored in this struct.
 */
@@ -55,10 +54,7 @@ typedef struct {
     uint8_t databytes; //No of data in data; bit 7 = delay after set; 0xFF = end of cmds.
 } ili_init_cmd_t;
 
-#undef CONFIG_HW_LCD_TYPE
-#define CONFIG_HW_LCD_TYPE 0
 #if (CONFIG_HW_LCD_TYPE == 1)
-
 static const ili_init_cmd_t ili_init_cmds[]={
     {0x36, {(1<<5)|(1<<6)}, 1},
     {0x3A, {0x55}, 1},
@@ -77,12 +73,9 @@ static const ili_init_cmd_t ili_init_cmds[]={
     {0x29, {0}, 0x80},
     {0, {0}, 0xff}
 };
-
 #endif
 
 #if (CONFIG_HW_LCD_TYPE == 0)
-
-
 static const ili_init_cmd_t ili_init_cmds[]={
     {0xCF, {0x00, 0x83, 0X30}, 3},
     {0xED, {0x64, 0x03, 0X12, 0X81}, 4},
@@ -110,7 +103,6 @@ static const ili_init_cmd_t ili_init_cmds[]={
     {0x29, {0}, 0x80},
     {0, {0}, 0xff},
 };
-
 #endif
 
 static spi_device_handle_t spi;
@@ -157,13 +149,14 @@ void ili_init(spi_device_handle_t spi)
     int cmd=0;
     //Initialize non-SPI GPIOs
     gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
-    gpio_set_direction(PIN_NUM_RST, GPIO_MODE_OUTPUT);
-    //gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
+    //gpio_set_direction(PIN_NUM_RST, GPIO_MODE_OUTPUT);
+    if(PIN_NUM_BCKL != -1)
+        gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
 
     //Reset the display
-    gpio_set_level(PIN_NUM_RST, 0);
-    vTaskDelay(100 / portTICK_RATE_MS);
-    gpio_set_level(PIN_NUM_RST, 1);
+    //gpio_set_level(PIN_NUM_RST, 0);
+    //vTaskDelay(100 / portTICK_RATE_MS);
+    //gpio_set_level(PIN_NUM_RST, 1);
     vTaskDelay(100 / portTICK_RATE_MS);
 
     //Send all the commands
@@ -180,11 +173,8 @@ void ili_init(spi_device_handle_t spi)
     }
 
     ///Enable backlight
-#if CONFIG_HW_INV_BL
-    //gpio_set_level(PIN_NUM_BCKL, 0);
-#else
-    //gpio_set_level(PIN_NUM_BCKL, 1);
-#endif
+    if(PIN_NUM_BCKL != -1)
+        gpio_set_level(PIN_NUM_BCKL, 1);
 
 }
 
@@ -282,7 +272,7 @@ void IRAM_ATTR displayTask(void *arg) {
         .max_transfer_sz=(MEM_PER_TRANS*2)+16
     };
     spi_device_interface_config_t devcfg={
-        .clock_speed_hz=60000000,               //Clock out at 26 MHz. Yes, that's heavily overclocked.
+        .clock_speed_hz=27000000,               //Clock out at 26 MHz. Yes, that's heavily overclocked.
         .mode=0,                                //SPI mode 0
         .spics_io_num=PIN_NUM_CS,               //CS pin
         .queue_size=NO_SIM_TRANS,               //We want to be able to queue this many transfers
@@ -294,10 +284,10 @@ void IRAM_ATTR displayTask(void *arg) {
     //heap_caps_print_heap_info(MALLOC_CAP_DMA);
 
     //Initialize the SPI bus
-    ret=spi_bus_initialize(VSPI_HOST, &buscfg, 2);  // DMA Channel
+    ret=spi_bus_initialize(CONFIG_HW_SD_PIN_NUM_MISO == 19 ? VSPI_HOST : HSPI_HOST, &buscfg, 2);  // DMA Channel
     assert(ret==ESP_OK);
     //Attach the LCD to the SPI bus
-    ret=spi_bus_add_device(VSPI_HOST, &devcfg, &spi);
+    ret=spi_bus_add_device(CONFIG_HW_SD_PIN_NUM_MISO == 19 ? VSPI_HOST : HSPI_HOST, &devcfg, &spi);
     assert(ret==ESP_OK);
     //Initialize the LCD
     ili_init(spi);

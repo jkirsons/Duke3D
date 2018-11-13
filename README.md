@@ -19,7 +19,8 @@ Run "make menuconfig" and check the settings under ESP32-DUKE3D platform-specifi
 This repository is split into the following code bases:
 
 ### Build Engine
-The Build Engine (folder: <b>"components/Engine"</b>) is licensed under the Build License - see BUILDLIC.TXT
+Folder: <b>"components/Engine"</b>
+The Build Engine is licensed under the Build License - see BUILDLIC.TXT
 
        // "Build Engine & Tools" Copyright (c) 1993-1997 Ken Silverman
        // Ken Silverman's official web site: "http://www.advsys.net/ken"
@@ -28,21 +29,25 @@ The Build Engine (folder: <b>"components/Engine"</b>) is licensed under the Buil
 Most files in this code base have been modified, and do not represent the original content from this author.
 
 ### Game Code
-The original Duke Nukem Game code (folder: <b>"components/Game"</b>) is licensed under GNU General Public License v2.0 (see LICENSE).
+Folder: <b>"components/Game"</b>
+The original Duke Nukem Game code is licensed under GNU General Public License v2.0 (see LICENSE).
 
-The Chocolate Duke modifications (folder: <b>"components/Game"</b>) were not released with a license, but permission from the author to "do whatever you want with my code" (see https://github.com/fabiensanglard/chocolate_duke3D/issues/48)
+The Chocolate Duke modifications were not released with a license, but permission from the author to "do whatever you want with my code" (see https://github.com/fabiensanglard/chocolate_duke3D/issues/48)
 
 Most files in this code base have been modified, and do not represent the original content from these authors.
 
 ### SDL Library
-The SDL library function wrapper (folder: <b>"components/SDL"</b>) contains parts of the Simple DirectMedia Layer library that is licensed under the ZLIB license (see ZLIB_LICENSE).  
+Folder: <b>"components/SDL"</b>
+The SDL library function wrapper contains parts of the Simple DirectMedia Layer library that is licensed under the ZLIB license (see LICENSE_ZLIB).  
 
 All files in this code base are either new or extensively modified, and do not represent the original SDL Library.
 
 ### SPI LCD Functions
-The SPI LCD functions (folder: <b>"components/SDL/spi_lcd.c and components/SDL/spi_lcd.h"</b>) are Copyright 2016-2017 Espressif Systems (Shanghai) PTE LTD and licenced under the Apache License 2.0 (see http://www.apache.org/licenses/LICENSE-2.0)
+Files: <b>"components/SDL/spi_lcd.c and components/SDL/spi_lcd.h"</b>
+The SPI LCD functions are Copyright 2016-2017 Espressif Systems (Shanghai) PTE LTD and licenced under the Apache License 2.0 (see http://www.apache.org/licenses/LICENSE-2.0)
 
 These files have been modified, and do not represent the original content from this author.
 
 ### ESP32 Wrapper
-Parts by me (folder: <b>"main"</b>) are licensed under GNU General Public License v2.0 (see LICENSE).
+Folder: <b>"main"</b>
+Parts by me are licensed under GNU General Public License v2.0 (see LICENSE).

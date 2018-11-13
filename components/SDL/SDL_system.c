@@ -42,6 +42,9 @@ void SDL_InitSD(void)
 #if 1
 	sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.command_timeout_ms = 3000;
+
+    // https://docs.espressif.com/projects/esp-idf/en/latest/api-reference/peripherals/spi_master.html
+    host.slot = CONFIG_HW_SD_PIN_NUM_MISO == 19 ? VSPI_HOST : HSPI_HOST;
     sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
     slot_config.gpio_miso = CONFIG_HW_SD_PIN_NUM_MISO;
     slot_config.gpio_mosi = CONFIG_HW_SD_PIN_NUM_MOSI;
@@ -59,15 +62,15 @@ void SDL_InitSD(void)
 #endif
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
-        .max_files = 2
+        .max_files = 4
     };
-    vTaskDelay( 1000 / portTICK_PERIOD_MS );
+    vTaskDelay( 200 / portTICK_PERIOD_MS );
 
 	sdmmc_card_t* card;
     ESP_ERROR_CHECK(esp_vfs_fat_sdmmc_mount("/sd", &host, &slot_config, &mount_config, &card));
 
     fprintf(stderr, "Init_SD: SD card opened.\n");
-    vTaskDelay( 500 / portTICK_PERIOD_MS );
+    vTaskDelay( 200 / portTICK_PERIOD_MS );
 	//sdmmc_card_print_info(stdout, card);    
 }
 

@@ -39,6 +39,7 @@ void SDL_Quit(void)
 
 void SDL_InitSD(void)
 {
+    printf("Initialising SD Card\n");
 #if 1
 	sdmmc_host_t host = SDSPI_HOST_DEFAULT();
     host.command_timeout_ms = 3000;
@@ -64,10 +65,12 @@ void SDL_InitSD(void)
         .format_if_mount_failed = false,
         .max_files = 4
     };
-    vTaskDelay( 200 / portTICK_PERIOD_MS );
+    vTaskDelay( 500 / portTICK_PERIOD_MS );
 
 	sdmmc_card_t* card;
+    SDL_LockDisplay();
     ESP_ERROR_CHECK(esp_vfs_fat_sdmmc_mount("/sd", &host, &slot_config, &mount_config, &card));
+    SDL_UnlockDisplay();
 
     fprintf(stderr, "Init_SD: SD card opened.\n");
     vTaskDelay( 200 / portTICK_PERIOD_MS );

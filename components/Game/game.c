@@ -8080,7 +8080,7 @@ void findGRPToUse(char * groupfilefullpath){
     }
     
     printf("Scanning directory '%s' for a GRP file like '%s'.\n",directoryToScan,baseDir);
-    
+    SDL_LockDisplay();    
     DIR* dir =  opendir(directoryToScan);
     printf("opendir %p\n", dir);
 
@@ -8102,6 +8102,7 @@ void findGRPToUse(char * groupfilefullpath){
         }
         
     }
+    SDL_UnlockDisplay();
 }
 
 #endif
@@ -8157,7 +8158,11 @@ int main(int argc,char  **argv)
 	
 	printf("*** Chocolate DukeNukem3D v%d.%d ***\n\n", CHOCOLATE_DUKE_REV_X, CHOCOLATE_DUKE_REV_DOT_Y);
     
+    if (SDL_Init(SDL_INIT_VIDEO) == -1){
+        Error(EXIT_FAILURE, "BUILDSDL: SDL_Init() failed!\nBUILDSDL: SDL_GetError() says \"%s\".\n", SDL_GetError());
+    } 
     SDL_InitSD();
+
 
 	// FIX_00033: Fake multi and AI are now fully working
 	ud.multimode = 1;  // xduke: must be done before checkcommandline or that will prevent Fakeplayer and AI

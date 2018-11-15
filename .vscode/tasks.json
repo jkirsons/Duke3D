@@ -72,7 +72,16 @@
             "command": "~/esp/esp-idf/tools/idf_size.py build/Duke3D.map --files ",
             "group": "build",
             "problemMatcher": []
-        }      
+        },
+
+        {
+            "label": "mkfw",
+            "type": "shell",
+            "command": "~/Documents/GitHub/odroid-go-firmware/tools/mkfw/mkfw Duke3D Tile.data 0 16 1048576 app build/Duke3D.bin
+            ",
+            "group": "post-build",
+            "problemMatcher": []
+        }          
         
     ]
 }

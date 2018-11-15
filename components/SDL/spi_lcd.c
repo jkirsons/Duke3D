@@ -22,7 +22,7 @@
 #include "soc/gpio_struct.h"
 #include "driver/gpio.h"
 #include "esp_heap_caps.h"
-
+#include "SDL.h"
 
 #if 0
 #define PIN_NUM_MISO 25
@@ -146,6 +146,7 @@ void ili_spi_pre_transfer_callback(spi_transaction_t *t)
 //Initialize the display
 void ili_init(spi_device_handle_t spi)
 {
+
     int cmd=0;
     //Initialize non-SPI GPIOs
     gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
@@ -310,9 +311,10 @@ void IRAM_ATTR displayTask(void *arg) {
 #ifndef DOUBLE_BUFFER
 		uint8_t *myData=(uint8_t*)currFbPtr;
 #endif
-
+        SDL_LockDisplay();
 		send_header_start(spi, 0, screen_boarder, 320, 240-screen_boarder*2);
 		send_header_cleanup(spi);
+        SDL_UnlockDisplay();
 		for (x=0; x<320*(240-screen_boarder*2); x+=MEM_PER_TRANS) {
 #ifdef DOUBLE_BUFFER
 			for (i=0; i<MEM_PER_TRANS; i+=4) {
@@ -331,7 +333,9 @@ void IRAM_ATTR displayTask(void *arg) {
 			trans[idx].length=MEM_PER_TRANS*16;
 			trans[idx].user=(void*)1;
 			trans[idx].tx_buffer=dmamem[idx];
+            SDL_LockDisplay();
 			ret=spi_device_queue_trans(spi, &trans[idx], portMAX_DELAY);
+            SDL_UnlockDisplay();
 			assert(ret==ESP_OK);
 
 			idx++;

@@ -123,6 +123,9 @@ SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags);
 SDL_VideoInfo *SDL_GetVideoInfo(void);
 char *SDL_VideoDriverName(char *namebuf, int maxlen);
 
+void SDL_LockDisplay();
+void SDL_UnlockDisplay();
+
 typedef unsigned char  JE_byte;
 //extern JE_byte ** allocateTwoDimenArrayOnHeapUsingMalloc(int row, int col);
 

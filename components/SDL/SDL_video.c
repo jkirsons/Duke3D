@@ -183,3 +183,27 @@ int SDL_VideoModeOK(int width, int height, int bpp, Uint32 flags)
 		return 1;
 	return 0;
 }
+
+SemaphoreHandle_t display_mutex = NULL;
+
+void SDL_LockDisplay()
+{
+    if (!display_mutex)
+    {
+        display_mutex = xSemaphoreCreateMutex();
+        if (!display_mutex) abort();
+    }
+
+    if (xSemaphoreTake(display_mutex, 10000 / portTICK_RATE_MS) != true)
+    {
+        printf("Timeout waiting for display lock.");
+        abort();
+    }
+}
+
+void SDL_UnlockDisplay()
+{
+    if (!display_mutex) abort();
+
+    xSemaphoreGive(display_mutex);
+}

@@ -15,6 +15,7 @@
 #include <strings.h>
 
 #include "esp_attr.h"
+#include "SDL.h"
 
 extern char game_dir[512];
 
@@ -80,9 +81,10 @@ int32_t initgroupfile(const char  *filename)
         exit(0);
     }
     
-    
+    SDL_LockDisplay();
     read(archive->fileDescriptor,buf,16);
-    
+    SDL_UnlockDisplay();
+
     //FCS   : The ".grp" file format is just a collection of a lot of files stored into 1 big one.
 	//KS doc: I tried to make the format as simple as possible: The first 12 bytes contains my name,
 	//"KenSilverman". The next 4 bytes is the number of files that were compacted into the
@@ -111,9 +113,11 @@ int32_t initgroupfile(const char  *filename)
     archive->fileOffsets = kmalloc(archive->numFiles * sizeof(int32_t));
     archive->filesizes = kmalloc(archive->numFiles * sizeof(int32_t));
     
+	SDL_LockDisplay();
     // Load the full index 16 bytes per file (12bytes for name + 4 bytes for the size).
     read(archive->fileDescriptor,archive->gfilelist, archive->numFiles * 16);
-    
+    SDL_UnlockDisplay();
+
     //Initialize all file offset and pointers.
     j = 12 + 4 + archive->numFiles * sizeof(grpIndexEntry_t);
     for(i=0;i<archive->numFiles;i++){
@@ -129,7 +133,7 @@ int32_t initgroupfile(const char  *filename)
     }
     //archive->fileOffsets[archive->numFiles-1] = j;
 	
-    
+    SDL_LockDisplay();
 	// Compute CRC32 of the whole grp and implicitely caches the GRP in memory through windows caching service.
     // Rewind the fileDescriptor
 	lseek(archive->fileDescriptor, 0, SEEK_SET);
@@ -144,6 +148,7 @@ int32_t initgroupfile(const char  *filename)
 		archive->crc32 = crc32_update(crcBuffer,j,archive->crc32);
 	}
     free(crcBuffer);
+	SDL_UnlockDisplay();
     // The game layer seems to absolutely need to access an array int[4] groupefil_crc32
     // so we need to store the crc32 in there too.
     groupefil_crc32[grpSet.num] = archive->crc32;
@@ -283,7 +288,7 @@ int32_t kopen4load(const char  *filename, int openOnlyFromGRP){
     if (newhandle < 0)
         Error(EXIT_FAILURE, "Too Many files open!\n");
     
-
+	SDL_LockDisplay();
     //Try to look in the filesystem first. In this case fd = filedescriptor.
     if(!openOnlyFromGRP){
         
@@ -296,7 +301,8 @@ int32_t kopen4load(const char  *filename, int openOnlyFromGRP){
             return(newhandle); 
         }
     }
-
+	SDL_UnlockDisplay();
+	
     //Try to look in the GRP archives. In this case fd = index of the file in the GRP.
 	for(k=grpSet.num-1;k>=0;k--)
 	{
@@ -332,7 +338,7 @@ int32_t kread(int32_t handle, void *buffer, int32_t leng){
         getchar();
         exit(0);
     }
-    
+    SDL_LockDisplay();
     //FILESYSTEM ? OS takes care of it !
     if (openFile->type == SYSTEM_FILE){
         return(read(openFile->fd,buffer,leng));
@@ -349,7 +355,8 @@ int32_t kread(int32_t handle, void *buffer, int32_t leng){
     leng = min(leng,archive->filesizes[openFile->fd]-openFile->cursor);
     
     leng = read(archive->fileDescriptor,buffer,leng);
-    
+   
+    SDL_UnlockDisplay();
     openFile->cursor += leng;
 	
     return leng;
@@ -388,12 +395,12 @@ int32_t klseek(int32_t handle, int32_t offset, int whence){
         getchar();
         exit(0);
     }
-    
+    SDL_LockDisplay();
     // FILESYSTEM ? OS will take care of it.
     if (openFiles[handle].type == SYSTEM_FILE){
         return lseek(openFiles[handle].fd,offset,whence);
     }
-    
+    SDL_UnlockDisplay();
     
     archive = & grpSet.archives [   openFiles[handle].grpID ];
 	
@@ -410,7 +417,9 @@ int32_t klseek(int32_t handle, int32_t offset, int whence){
 
 int32_t filelength(int32_t fd){
     struct stat stats;
+	SDL_LockDisplay();
     fstat(fd, &stats);
+	SDL_UnlockDisplay();
     return (int32_t )stats.st_size;
 }
 
@@ -448,11 +457,11 @@ void kclose(int32_t handle)
         getchar();
         exit(0);
     }
-    
+    SDL_LockDisplay();
     if (openFile->type == SYSTEM_FILE){
         close(openFile->fd);
     }
-	
+	SDL_UnlockDisplay();
     memset(openFile, 0, sizeof(openFile_t));
     
 }
@@ -628,7 +637,7 @@ void dfread(void *buffer, size_t dasizeof, size_t count, FILE *fil)
     }
     
 	ptr = (uint8_t  *)buffer;
-    
+    SDL_LockDisplay();
 	fread(&leng,2,1,fil);
     fread(lzwbuf5,(int32_t )leng,1,fil);
     
@@ -650,6 +659,7 @@ void dfread(void *buffer, size_t dasizeof, size_t count, FILE *fil)
 		ptr += dasizeof;
 	}
 	lzwbuflock[0] = lzwbuflock[1] = lzwbuflock[2] = lzwbuflock[3] = lzwbuflock[4] = 1;
+	SDL_UnlockDisplay();
 }
 
 void dfwrite(void *buffer, size_t dasizeof, size_t count, FILE *fil)
@@ -670,7 +680,7 @@ void dfwrite(void *buffer, size_t dasizeof, size_t count, FILE *fil)
     
 	copybufbyte(ptr,lzwbuf4,(int32_t )dasizeof);
 	k = dasizeof;
-    
+    SDL_LockDisplay();
 	if (k > LZWSIZE-dasizeof)
 	{
 		leng = (short)compress(lzwbuf4,k,lzwbuf5); k = 0;
@@ -694,6 +704,7 @@ void dfwrite(void *buffer, size_t dasizeof, size_t count, FILE *fil)
 		fwrite(&leng,2,1,fil); fwrite(lzwbuf5,(int32_t )leng,1,fil);
 	}
 	lzwbuflock[0] = lzwbuflock[1] = lzwbuflock[2] = lzwbuflock[3] = lzwbuflock[4] = 1;
+	SDL_UnlockDisplay();
 }
 
 

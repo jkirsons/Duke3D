@@ -766,9 +766,7 @@ void _platform_init(int argc, char  **argv, const char  *title, const char  *ico
 #endif
   	
 
-    if (SDL_Init(SDL_INIT_VIDEO) == -1){
-        Error(EXIT_FAILURE, "BUILDSDL: SDL_Init() failed!\nBUILDSDL: SDL_GetError() says \"%s\".\n", SDL_GetError());
-    } 
+
     
 
 	// Set up the correct renderer

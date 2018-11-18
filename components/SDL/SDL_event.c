@@ -9,12 +9,32 @@ typedef struct {
 
 int keyMode = 1;
 //Mappings from buttons to keys
+#ifdef CONFIG_HW_ODROID_GO
+static const GPIOKeyMap keymap[2][6]={{
+// Game    
+	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_LCTRL, SDLK_LCTRL},			
+	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_SPACE, SDLK_SPACE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_MENU, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_SELECT, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_START, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_VOL, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},		
+},
+// Menu
+{
+	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},			
+	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_SPACE, SDLK_SPACE}, 	
+	{CONFIG_HW_BUTTON_PIN_NUM_MENU, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_SELECT, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_START, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_VOL, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	    
+}};
+#else
 static const GPIOKeyMap keymap[2][6]={{
 // Game    
 	{CONFIG_HW_BUTTON_PIN_NUM_UP, SDL_SCANCODE_UP, SDLK_UP},
-	{CONFIG_HW_BUTTON_PIN_NUM_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN},
-	{CONFIG_HW_BUTTON_PIN_NUM_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT},
 	{CONFIG_HW_BUTTON_PIN_NUM_RIGHT, SDL_SCANCODE_RIGHT, SDLK_RIGHT},
+ 	{CONFIG_HW_BUTTON_PIN_NUM_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN},
+	{CONFIG_HW_BUTTON_PIN_NUM_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT}, 
 
 	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_LCTRL, SDLK_LCTRL},			
 	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_SPACE, SDLK_SPACE},		
@@ -22,13 +42,27 @@ static const GPIOKeyMap keymap[2][6]={{
 // Menu
 {
 	{CONFIG_HW_BUTTON_PIN_NUM_UP, SDL_SCANCODE_UP, SDLK_UP},
-	{CONFIG_HW_BUTTON_PIN_NUM_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN},
-	{CONFIG_HW_BUTTON_PIN_NUM_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT},
 	{CONFIG_HW_BUTTON_PIN_NUM_RIGHT, SDL_SCANCODE_RIGHT, SDLK_RIGHT},
+    {CONFIG_HW_BUTTON_PIN_NUM_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN},
+	{CONFIG_HW_BUTTON_PIN_NUM_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT}, 
 
 	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},			
-	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_SPACE, SDLK_SPACE},		
+	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_SPACE, SDLK_SPACE},   	
 }};
+#endif
+
+#define ODROID_GAMEPAD_IO_X ADC1_CHANNEL_6
+#define ODROID_GAMEPAD_IO_Y ADC1_CHANNEL_7
+
+typedef struct
+{
+    uint8_t up;
+    uint8_t right;
+    uint8_t down;
+    uint8_t left;
+} JoystickState;
+
+JoystickState lastState = {0,0,0,0};
 
 typedef struct {
     Uint32 type;        /**< ::SDL_KEYDOWN or ::SDL_KEYUP */
@@ -37,6 +71,84 @@ typedef struct {
 } GPIOEvent;
 
 static xQueueHandle gpio_evt_queue = NULL;
+
+int readOdroidXY(SDL_Event * event)
+{
+    int joyX = adc1_get_raw(ODROID_GAMEPAD_IO_X);
+    int joyY = adc1_get_raw(ODROID_GAMEPAD_IO_Y);
+    
+    JoystickState state;
+    if (joyX > 2048 + 1024)
+    {
+        state.left = 1;
+        state.right = 0;
+    }
+    else if (joyX > 1024)
+    {
+        state.left = 0;
+        state.right = 1;
+    }
+    else
+    {
+        state.left = 0;
+        state.right = 0;
+    }
+
+    if (joyY > 2048 + 1024)
+    {
+        state.up = 1;
+        state.down = 0;
+    }
+    else if (joyY > 1024)
+    {
+        state.up = 0;
+        state.down = 1;
+    }
+    else
+    {
+        state.up = 0;
+        state.down = 0;
+    }    
+    
+    event->key.keysym.mod = 0;
+    if(state.up != lastState.up)
+    {
+        lastState.up = state.up;
+        event->key.keysym.scancode = SDL_SCANCODE_UP;
+        event->key.keysym.sym = SDLK_UP;
+        event->key.type = state.up ? SDL_KEYDOWN : SDL_KEYUP;
+        event->key.state = state.up ? SDL_PRESSED : SDL_RELEASED;
+        return 1;
+    }
+    if(state.down != lastState.down)
+    {
+        lastState.down = state.down;
+        event->key.keysym.scancode = SDL_SCANCODE_DOWN;
+        event->key.keysym.sym = SDLK_DOWN;
+        event->key.type = state.down ? SDL_KEYDOWN : SDL_KEYUP;
+        event->key.state = state.down ? SDL_PRESSED : SDL_RELEASED;
+        return 1;
+    }
+    if(state.left != lastState.left)
+    {
+        lastState.left = state.left;
+        event->key.keysym.scancode = SDL_SCANCODE_LEFT;
+        event->key.keysym.sym = SDLK_LEFT;
+        event->key.type = state.left ? SDL_KEYDOWN : SDL_KEYUP;
+        event->key.state = state.left ? SDL_PRESSED : SDL_RELEASED;
+        return 1;
+    }
+    if(state.right != lastState.right)
+    {
+        lastState.right = state.right;
+        event->key.keysym.scancode = SDL_SCANCODE_RIGHT;
+        event->key.keysym.sym = SDLK_RIGHT;
+        event->key.type = state.right ? SDL_KEYDOWN : SDL_KEYUP;
+        event->key.state = state.right ? SDL_PRESSED : SDL_RELEASED;
+        return 1;
+    }    
+    return 0;
+}
 
 int SDL_PollEvent(SDL_Event * event)
 {
@@ -49,9 +161,12 @@ int SDL_PollEvent(SDL_Event * event)
         event->key.keysym.scancode = ev.scancode;
         event->key.type = ev.type;
         event->key.keysym.mod = 0;
-        event->key.state = ev.type == SDL_KEYDOWN ? SDL_PRESSED : SDL_RELEASED;     /**< ::SDL_PRESSED or ::SDL_RELEASED */ 
+        event->key.state = ev.type == SDL_KEYDOWN ? SDL_PRESSED : SDL_RELEASED;     //< ::SDL_PRESSED or ::SDL_RELEASED 
         return 1;
     }
+#ifdef CONFIG_HW_ODROID_GO
+    return readOdroidXY(event);
+#endif
     return 0;
 }
 
@@ -108,6 +223,12 @@ void inputInit()
     //hook isr handler
 	for (int i=0; i < NELEMS(keymap[0]); i++)
     	gpio_isr_handler_add(keymap[0][i].gpio, gpio_isr_handler, (void*) keymap[0][i].gpio);
+
+#ifdef CONFIG_HW_ODROID_GO
+	adc1_config_width(ADC_WIDTH_12Bit);
+    adc1_config_channel_atten(ODROID_GAMEPAD_IO_X, ADC_ATTEN_11db);
+	adc1_config_channel_atten(ODROID_GAMEPAD_IO_Y, ADC_ATTEN_11db);
+#endif    
 
 	printf("keyboard: GPIO task created.\n");
 }

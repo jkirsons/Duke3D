@@ -44,6 +44,9 @@
 
 //You want this, especially at higher framerates. The 2nd buffer is allocated in iram anyway, so isn't really in the way.
 #define DOUBLE_BUFFER
+const int DUTY_MAX = 0x1fff;
+bool isBackLightIntialized = false;
+const int LCD_BACKLIGHT_ON_VALUE = 1;
 
 /*
  The LCD needs a bunch of command/argument values to be initialized. They are stored in this struct.
@@ -76,31 +79,42 @@ static const ili_init_cmd_t ili_init_cmds[]={
 #endif
 
 #if (CONFIG_HW_LCD_TYPE == 0)
+#define TFT_CMD_SWRESET	0x01
+#define TFT_CMD_SLEEP 0x10
+#define TFT_CMD_DISPLAY_OFF 0x28
+
+#define MADCTL_MY  0x80
+#define MADCTL_MX  0x40
+#define MADCTL_MV  0x20
+#define MADCTL_ML  0x10
+#define MADCTL_MH 0x04
+#define TFT_RGB_BGR 0x08
 static const ili_init_cmd_t ili_init_cmds[]={
-    {0xCF, {0x00, 0x83, 0X30}, 3},
-    {0xED, {0x64, 0x03, 0X12, 0X81}, 4},
-    {0xE8, {0x85, 0x01, 0x79}, 3},
-    {0xCB, {0x39, 0x2C, 0x00, 0x34, 0x02}, 5},
+    {TFT_CMD_SWRESET, {0}, 0x80},
+    {0xCF, {0x00, 0xc3, 0x30}, 3},
+    {0xED, {0x64, 0x03, 0x12, 0x81}, 4},
+    {0xE8, {0x85, 0x00, 0x78}, 3},
+    {0xCB, {0x39, 0x2c, 0x00, 0x34, 0x02}, 5},
     {0xF7, {0x20}, 1},
     {0xEA, {0x00, 0x00}, 2},
-    {0xC0, {0x26}, 1},
-    {0xC1, {0x11}, 1},
-    {0xC5, {0x35, 0x3E}, 2},
-    {0xC7, {0xBE}, 1},
-    {0x36, {0x28}, 1},
+    {0xC0, {0x1B}, 1},    //Power control   //VRH[5:0]
+    {0xC1, {0x12}, 1},    //Power control   //SAP[2:0];BT[3:0]
+    {0xC5, {0x32, 0x3C}, 2},    //VCM control
+    {0xC7, {0x91}, 1},    //VCM control2
+    //{0x36, {(MADCTL_MV | MADCTL_MX | TFT_RGB_BGR)}, 1},    // Memory Access Control
+    {0x36, {(MADCTL_MV | MADCTL_MY | TFT_RGB_BGR)}, 1},    // Memory Access Control
     {0x3A, {0x55}, 1},
-    {0xB1, {0x00, 0x1B}, 2},
-    {0xF2, {0x08}, 1},
-    {0x26, {0x01}, 1},
-    {0xE0, {0x1F, 0x1A, 0x18, 0x0A, 0x0F, 0x06, 0x45, 0X87, 0x32, 0x0A, 0x07, 0x02, 0x07, 0x05, 0x00}, 15},
-    {0XE1, {0x00, 0x25, 0x27, 0x05, 0x10, 0x09, 0x3A, 0x78, 0x4D, 0x05, 0x18, 0x0D, 0x38, 0x3A, 0x1F}, 15},
-    {0x2A, {0x00, 0x00, 0x00, 0xEF}, 4},
-    {0x2B, {0x00, 0x00, 0x01, 0x3f}, 4},
-    {0x2C, {0}, 0},
-    {0xB7, {0x07}, 1},
-    {0xB6, {0x0A, 0x82, 0x27, 0x00}, 4},
-    {0x11, {0}, 0x80},
-    {0x29, {0}, 0x80},
+    {0xB1, {0x00, 0x1B}, 2},  // Frame Rate Control (1B=70, 1F=61, 10=119)
+    {0xB6, {0x0A, 0xA2}, 2},    // Display Function Control
+    {0xF6, {0x01, 0x30}, 2},
+    {0xF2, {0x00}, 1},    // 3Gamma Function Disable
+    {0x26, {0x01}, 1},     //Gamma curve selected
+
+    //Set Gamma
+    {0xE0, {0x0F, 0x31, 0x2B, 0x0C, 0x0E, 0x08, 0x4E, 0xF1, 0x37, 0x07, 0x10, 0x03, 0x0E, 0x09, 0x00}, 15},
+    {0XE1, {0x00, 0x0E, 0x14, 0x03, 0x11, 0x07, 0x31, 0xC1, 0x48, 0x08, 0x0F, 0x0C, 0x31, 0x36, 0x0F}, 15},
+    {0x11, {0}, 0x80},    //Exit Sleep
+    {0x29, {0}, 0x80},    //Display on
     {0, {0}, 0xff},
 };
 #endif
@@ -143,10 +157,64 @@ void ili_spi_pre_transfer_callback(spi_transaction_t *t)
     gpio_set_level(PIN_NUM_DC, dc);
 }
 
+static void backlight_init()
+{
+    // Note: In esp-idf v3.0, settings flash speed to 80Mhz causes the LCD controller
+    // to malfunction after a soft-reset.
+
+    // (duty range is 0 ~ ((2**bit_num)-1)
+
+    //configure timer0
+    ledc_timer_config_t ledc_timer;
+    memset(&ledc_timer, 0, sizeof(ledc_timer));
+
+    ledc_timer.bit_num = LEDC_TIMER_13_BIT; //set timer counter bit number
+    ledc_timer.freq_hz = 5000;              //set frequency of pwm
+    ledc_timer.speed_mode = LEDC_LOW_SPEED_MODE;   //timer mode,
+    ledc_timer.timer_num = LEDC_TIMER_0;    //timer index
+
+    ledc_timer_config(&ledc_timer);
+
+    //set the configuration
+    ledc_channel_config_t ledc_channel;
+    memset(&ledc_channel, 0, sizeof(ledc_channel));
+
+    //set LEDC channel 0
+    ledc_channel.channel = LEDC_CHANNEL_0;
+    //set the duty for initialization.(duty range is 0 ~ ((2**bit_num)-1)
+    ledc_channel.duty = (LCD_BACKLIGHT_ON_VALUE) ? 0 : DUTY_MAX;
+    //GPIO number
+    ledc_channel.gpio_num = PIN_NUM_BCKL;
+    //GPIO INTR TYPE, as an example, we enable fade_end interrupt here.
+    ledc_channel.intr_type = LEDC_INTR_FADE_END;
+    //set LEDC mode, from ledc_mode_t
+    ledc_channel.speed_mode = LEDC_LOW_SPEED_MODE;
+    //set LEDC timer source, if different channel use one timer,
+    //the frequency and bit_num of these channels should be the same
+    ledc_channel.timer_sel = LEDC_TIMER_0;
+
+    ledc_channel_config(&ledc_channel);
+
+    //initialize fade service.
+    ledc_fade_func_install(0);
+
+    // duty range is 0 ~ ((2**bit_num)-1)
+    ledc_set_fade_with_time(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, (LCD_BACKLIGHT_ON_VALUE) ? DUTY_MAX : 0, 500);
+    ledc_fade_start(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, LEDC_FADE_NO_WAIT);
+
+    isBackLightIntialized = true;
+}
+
+void backlight_percentage_set(int value)
+{
+    int duty = DUTY_MAX * (value * 0.01f);
+    ledc_set_fade_with_time(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, duty, 500);
+    ledc_fade_start(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, LEDC_FADE_NO_WAIT);
+}
+
 //Initialize the display
 void ili_init(spi_device_handle_t spi)
 {
-
     int cmd=0;
     //Initialize non-SPI GPIOs
     gpio_set_direction(PIN_NUM_DC, GPIO_MODE_OUTPUT);
@@ -154,6 +222,7 @@ void ili_init(spi_device_handle_t spi)
     if(PIN_NUM_BCKL != -1)
         gpio_set_direction(PIN_NUM_BCKL, GPIO_MODE_OUTPUT);
 
+    backlight_init();
     //Reset the display
     //gpio_set_level(PIN_NUM_RST, 0);
     //vTaskDelay(100 / portTICK_RATE_MS);
@@ -179,8 +248,7 @@ void ili_init(spi_device_handle_t spi)
 
 }
 
-
-static void send_header_start(spi_device_handle_t spi, int xpos, int ypos, int w, int h)
+static void IRAM_ATTR send_header_start(spi_device_handle_t spi, int xpos, int ypos, int w, int h)
 {
     esp_err_t ret;
     int x;
@@ -228,7 +296,7 @@ static void send_header_start(spi_device_handle_t spi, int xpos, int ypos, int w
 }
 
 
-void send_header_cleanup(spi_device_handle_t spi)
+void IRAM_ATTR send_header_cleanup(spi_device_handle_t spi)
 {
     spi_transaction_t *rtrans;
     esp_err_t ret;
@@ -251,7 +319,7 @@ SemaphoreHandle_t dispSem = NULL;
 SemaphoreHandle_t dispDoneSem = NULL;
 
 #define NO_SIM_TRANS 5 //Amount of SPI transfers to queue in parallel
-#define MEM_PER_TRANS 320*2 //in 16-bit words
+#define MEM_PER_TRANS 320*4 //in 16-bit words
 
 int16_t lcdpal[256];
 
@@ -273,7 +341,7 @@ void IRAM_ATTR displayTask(void *arg) {
         .max_transfer_sz=(MEM_PER_TRANS*2)+16
     };
     spi_device_interface_config_t devcfg={
-        .clock_speed_hz=27000000,               //Clock out at 26 MHz. Yes, that's heavily overclocked.
+        .clock_speed_hz=40000000,               //Clock out at 26 MHz. Yes, that's heavily overclocked.
         .mode=0,                                //SPI mode 0
         .spics_io_num=PIN_NUM_CS,               //CS pin
         .queue_size=NO_SIM_TRANS,               //We want to be able to queue this many transfers
@@ -284,14 +352,16 @@ void IRAM_ATTR displayTask(void *arg) {
 
     //heap_caps_print_heap_info(MALLOC_CAP_DMA);
 
+    SDL_LockDisplay();
     //Initialize the SPI bus
-    ret=spi_bus_initialize(CONFIG_HW_SD_PIN_NUM_MISO == 19 ? VSPI_HOST : HSPI_HOST, &buscfg, 2);  // DMA Channel
+    ret=spi_bus_initialize(CONFIG_HW_LCD_MISO_GPIO == 19 ? VSPI_HOST : HSPI_HOST, &buscfg, 2);  // DMA Channel
     assert(ret==ESP_OK);
     //Attach the LCD to the SPI bus
-    ret=spi_bus_add_device(CONFIG_HW_SD_PIN_NUM_MISO == 19 ? VSPI_HOST : HSPI_HOST, &devcfg, &spi);
+    ret=spi_bus_add_device(CONFIG_HW_LCD_MISO_GPIO == 19 ? VSPI_HOST : HSPI_HOST, &devcfg, &spi);
     assert(ret==ESP_OK);
     //Initialize the LCD
     ili_init(spi);
+    SDL_UnlockDisplay();   
 
 	//We're going to do a fair few transfers in parallel. Set them all up.
 	for (x=0; x<NO_SIM_TRANS; x++) {
@@ -306,7 +376,7 @@ void IRAM_ATTR displayTask(void *arg) {
 	//xSemaphoreGive(dispDoneSem);
 
 	while(1) {
-		//xSemaphoreTake(dispSem, portMAX_DELAY);
+		xSemaphoreTake(dispSem, portMAX_DELAY);
 //		printf("Display task: frame.\n");
 #ifndef DOUBLE_BUFFER
 		uint8_t *myData=(uint8_t*)currFbPtr;
@@ -314,7 +384,7 @@ void IRAM_ATTR displayTask(void *arg) {
         SDL_LockDisplay();
 		send_header_start(spi, 0, screen_boarder, 320, 240-screen_boarder*2);
 		send_header_cleanup(spi);
-        SDL_UnlockDisplay();
+        
 		for (x=0; x<320*(240-screen_boarder*2); x+=MEM_PER_TRANS) {
 #ifdef DOUBLE_BUFFER
 			for (i=0; i<MEM_PER_TRANS; i+=4) {
@@ -333,9 +403,8 @@ void IRAM_ATTR displayTask(void *arg) {
 			trans[idx].length=MEM_PER_TRANS*16;
 			trans[idx].user=(void*)1;
 			trans[idx].tx_buffer=dmamem[idx];
-            SDL_LockDisplay();
+
 			ret=spi_device_queue_trans(spi, &trans[idx], portMAX_DELAY);
-            SDL_UnlockDisplay();
 			assert(ret==ESP_OK);
 
 			idx++;
@@ -356,6 +425,7 @@ void IRAM_ATTR displayTask(void *arg) {
 			assert(ret==ESP_OK);
 			inProgress--;
 		}
+        SDL_UnlockDisplay();
 	}
 }
 
@@ -380,7 +450,7 @@ void spi_lcd_send(uint16_t *scr) {
 	xSemaphoreGive(dispSem);
 }
 
-void spi_lcd_send_boarder(uint16_t *scr, int boarder) {
+void IRAM_ATTR spi_lcd_send_boarder(uint16_t *scr, int boarder) {
 #ifdef DOUBLE_BUFFER
 	//memcpy(currFbPtr+(boarder*320/4), scr, 320*(240-boarder*2));
     screen_boarder = boarder;
@@ -388,7 +458,7 @@ void spi_lcd_send_boarder(uint16_t *scr, int boarder) {
 #else
 	currFbPtr=scr;
 #endif
-	//xSemaphoreGive(dispSem);
+	xSemaphoreGive(dispSem);
 }
 
 void spi_lcd_clear() {
@@ -401,7 +471,7 @@ void spi_lcd_clear() {
 void spi_lcd_init() {
 	printf("spi_lcd_init()\n");
     dispSem=xSemaphoreCreateBinary();
-    dispDoneSem=xSemaphoreCreateBinary();
+    //dispDoneSem=xSemaphoreCreateBinary();
 #ifdef DOUBLE_BUFFER
     screen_boarder = 0;
     currFbPtr=heap_caps_malloc(320*240, MALLOC_CAP_32BIT);

@@ -3786,7 +3786,7 @@ static int clippoly4(int32_t cx1, int32_t cy1, int32_t cx2, int32_t cy2)
 
 
 
-static void dorotatesprite (int32_t sx, int32_t sy, int32_t z, short a, short picnum,
+IRAM_ATTR static void  dorotatesprite (int32_t sx, int32_t sy, int32_t z, short a, short picnum,
                             int8_t dashade, uint8_t  dapalnum, uint8_t  dastat, int32_t cx1,
                             int32_t cy1, int32_t cx2, int32_t cy2)
 {

@@ -374,7 +374,7 @@ extern short numanimwalls,probey,lastprobey;
 char  *mymembuf;
 extern uint8_t  typebuflen;
 char typebuf[41];
-extern EXT_RAM_ATTR uint8_t  MusicPtr[72000];
+extern EXT_RAM_ATTR uint8_t  MusicPtr[1];
 extern EXT_RAM_ATTR int32_t msx[2048],msy[2048];
 extern short cyclers[MAXCYCLERS][6],numcyclers;
 extern char  myname[2048];

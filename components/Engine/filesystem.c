@@ -58,7 +58,7 @@ int32_t initgroupfile(const char  *filename)
     
     
     
-	printf("Loading %s ...\n", filename);
+	printf("Loading %s ...", filename);
     
 	if (grpSet.num == MAXGROUPFILES){
         printf("Error: Unable to open an extra GRP archive <= No more slot available.\n");
@@ -72,7 +72,7 @@ int32_t initgroupfile(const char  *filename)
     
 	//groupfil_memory[numgroupfiles] = NULL; // addresses of raw GRP files in memory
 	//groupefil_crc32[numgroupfiles] = 0;
-    
+    SDL_LockDisplay();
 	archive->fileDescriptor = open(filename,O_BINARY|O_RDONLY,S_IREAD);
     
     if (archive->fileDescriptor < 0){
@@ -81,9 +81,8 @@ int32_t initgroupfile(const char  *filename)
         exit(0);
     }
     
-    SDL_LockDisplay();
+    
     read(archive->fileDescriptor,buf,16);
-    SDL_UnlockDisplay();
 
     //FCS   : The ".grp" file format is just a collection of a lot of files stored into 1 big one.
 	//KS doc: I tried to make the format as simple as possible: The first 12 bytes contains my name,
@@ -113,10 +112,8 @@ int32_t initgroupfile(const char  *filename)
     archive->fileOffsets = kmalloc(archive->numFiles * sizeof(int32_t));
     archive->filesizes = kmalloc(archive->numFiles * sizeof(int32_t));
     
-	SDL_LockDisplay();
     // Load the full index 16 bytes per file (12bytes for name + 4 bytes for the size).
     read(archive->fileDescriptor,archive->gfilelist, archive->numFiles * 16);
-    SDL_UnlockDisplay();
 
     //Initialize all file offset and pointers.
     j = 12 + 4 + archive->numFiles * sizeof(grpIndexEntry_t);
@@ -133,22 +130,28 @@ int32_t initgroupfile(const char  *filename)
     }
     //archive->fileOffsets[archive->numFiles-1] = j;
 	
-    SDL_LockDisplay();
+
 	// Compute CRC32 of the whole grp and implicitely caches the GRP in memory through windows caching service.
     // Rewind the fileDescriptor
 	lseek(archive->fileDescriptor, 0, SEEK_SET);
-    
+
 	//i = 1000000;
 	//groupfil_memory[numgroupfiles] = malloc(i);
     
     //Load the full GRP in RAM.
 	//uint8_t         crcBuffer[ 1 << 20]     ;
 	uint8_t *crcBuffer = malloc((1 << 20)*sizeof(uint8_t));
-	while((j=read(archive->fileDescriptor, crcBuffer, /*sizeof(crcBuffer)*/(1 << 20)*sizeof(uint8_t) ))){
-		archive->crc32 = crc32_update(crcBuffer,j,archive->crc32);
+//	while((j=read(archive->fileDescriptor, crcBuffer, /*sizeof(crcBuffer)*/(1 << 20)*sizeof(uint8_t) ))){
+/*		archive->crc32 = crc32_update(crcBuffer,j,archive->crc32);
+		SDL_UnlockDisplay();
+		SDL_LockDisplay();
+		printf(".");
+		fflush(stdout);
 	}
+*/	SDL_UnlockDisplay();
+	printf("\n");
     free(crcBuffer);
-	SDL_UnlockDisplay();
+	
     // The game layer seems to absolutely need to access an array int[4] groupefil_crc32
     // so we need to store the crc32 in there too.
     groupefil_crc32[grpSet.num] = archive->crc32;
@@ -298,11 +301,12 @@ int32_t kopen4load(const char  *filename, int openOnlyFromGRP){
             openFiles[newhandle].type = SYSTEM_FILE;
             openFiles[newhandle].cursor = 0;
             openFiles[newhandle].used = 1;
+			SDL_UnlockDisplay();
             return(newhandle); 
         }
     }
 	SDL_UnlockDisplay();
-	
+
     //Try to look in the GRP archives. In this case fd = index of the file in the GRP.
 	for(k=grpSet.num-1;k>=0;k--)
 	{
@@ -341,7 +345,9 @@ int32_t kread(int32_t handle, void *buffer, int32_t leng){
     SDL_LockDisplay();
     //FILESYSTEM ? OS takes care of it !
     if (openFile->type == SYSTEM_FILE){
-        return(read(openFile->fd,buffer,leng));
+		int32_t ret = read(openFile->fd,buffer,leng);
+		SDL_UnlockDisplay();
+        return ret;
     }
     
     //File is actually in the GRP
@@ -395,12 +401,14 @@ int32_t klseek(int32_t handle, int32_t offset, int whence){
         getchar();
         exit(0);
     }
-    SDL_LockDisplay();
+    
     // FILESYSTEM ? OS will take care of it.
     if (openFiles[handle].type == SYSTEM_FILE){
-        return lseek(openFiles[handle].fd,offset,whence);
+		SDL_LockDisplay();
+		int32_t ret = lseek(openFiles[handle].fd,offset,whence);
+		SDL_UnlockDisplay();
+        return ret;
     }
-    SDL_UnlockDisplay();
     
     archive = & grpSet.archives [   openFiles[handle].grpID ];
 	

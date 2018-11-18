@@ -1,6 +1,7 @@
 #ifndef TFT_LCD_H
 #define TFT_LCD_H
 #include "stdint.h"
+#include "driver/ledc.h"
 
 void spi_lcd_wait_finish();
 void spi_lcd_send(uint16_t *scr);

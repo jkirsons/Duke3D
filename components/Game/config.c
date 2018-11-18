@@ -37,7 +37,7 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 #include "scriplib.h"
 #include "build.h"
-
+#include "SDL.h"
 
 // we load this in to get default button and key assignments
 // as well as setting up function mappings
@@ -106,7 +106,7 @@ void CONFIG_GetSetupFilename( void )
 
 	   //Yes
 		sprintf(setupfilename, "%s\\%s", getGameDir(), SETUPFILENAME);
-		
+		SDL_LockDisplay();
 		// let's make sure it's actually there
 		fp = fopen(setupfilename, "r");
 		if(fp)
@@ -116,6 +116,7 @@ void CONFIG_GetSetupFilename( void )
 			printf("Config file: %s does not exist, using main config.\n", setupfilename);
 			sprintf(setupfilename, "%s", SETUPFILENAME);
 		}
+      SDL_UnlockDisplay();
 
    }else{
 	   //No
@@ -597,17 +598,19 @@ void CONFIG_ReadSetup( void )
    FILE* setup_file_hdl;
 
    printf("CONFIG_ReadSetup...\n");
-   
    if (!SafeFileExists(setupfilename))
-      {
+   {
 		// FIX_00011: duke3d.cfg not needed anymore to start the game. Will create a default one
 		//            if not found and use default keys.
       printf("%s does not exist. Don't forget to set it up!\n" ,setupfilename);
-	  setup_file_hdl = fopen (setupfilename, "w"); // create it...
-	  if(setup_file_hdl)
-		  fclose(setup_file_hdl);
-      }
-
+      SDL_LockDisplay();
+      setup_file_hdl = fopen (setupfilename, "w"); // create it...
+      if(setup_file_hdl)
+         fclose(setup_file_hdl);
+      SDL_UnlockDisplay();   
+   }
+   
+   
    CONFIG_SetDefaults();
    scripthandle = SCRIPT_Load( setupfilename );
 

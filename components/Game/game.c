@@ -459,7 +459,7 @@ char  *grpVersion2char(uint8_t  grp_to_identify)
 //This is a function from the Engine module, used in getpackets.
 void sampletimer(void);
 
-IRAM_ATTR void getpackets(void)
+void getpackets(void)
 {
     int32_t i, j, k, l;
     short other, packbufleng;
@@ -804,7 +804,7 @@ IRAM_ATTR void faketimerhandler()
     
     //YES : Add 120tick
     ototalclock += TICSPERFRAME;
-
+#if 0    
     //Check network stuff.
     getpackets();
     if (getoutputcirclesize() >= 16)
@@ -1103,6 +1103,7 @@ IRAM_ATTR void faketimerhandler()
 
         movefifosendplc += movesperpacket;
     }
+#endif    
 }
 
 extern int32_t cacnum;
@@ -8098,6 +8099,7 @@ void findGRPToUse(char * groupfilefullpath){
         {
             printf("dukeGRP_Match\n");
             sprintf(groupfilefullpath,"%s%s",directoryToScan, dirEntry->d_name);
+            SDL_UnlockDisplay();
             return;
         }
         
@@ -8158,10 +8160,9 @@ int main(int argc,char  **argv)
 	
 	printf("*** Chocolate DukeNukem3D v%d.%d ***\n\n", CHOCOLATE_DUKE_REV_X, CHOCOLATE_DUKE_REV_DOT_Y);
     
-    if (SDL_Init(SDL_INIT_VIDEO) == -1){
-        Error(EXIT_FAILURE, "BUILDSDL: SDL_Init() failed!\nBUILDSDL: SDL_GetError() says \"%s\".\n", SDL_GetError());
-    } 
+    SDL_Init(SDL_INIT_VIDEO);
     SDL_InitSD();
+    spi_lcd_clear();
 
 
 	// FIX_00033: Fake multi and AI are now fully working
@@ -8241,18 +8242,21 @@ int main(int argc,char  **argv)
 
 		printf(	"\nYou should try to get one of these GRP only as a base GRP\n"
 				"Do you want to continue anyway? (Y/N): ");
-		do
+		/*
+        do
 			kbdKey = getch() | ' ';
 		while(kbdKey != 'y' && kbdKey != 'n');
 		printf("%c\n", kbdKey);
 
 		if(kbdKey == 'n')
 			Error(EXIT_SUCCESS,"");
+        */
 	}
 
 	// computing exe crc
 	ud.exeCRC[0] = 0;
 	exe = NULL;
+    SDL_LockDisplay();
 	filehandle = open(argv[0],O_BINARY|O_RDONLY);
 	if(filehandle!=-1)
 	{
@@ -8265,7 +8269,7 @@ int main(int argc,char  **argv)
 		}
 		close(filehandle);
 	}
-
+    SDL_UnlockDisplay();
 
 	checkcommandline(argc,argv);
 
@@ -8741,7 +8745,7 @@ void opendemowrite(void)
 		// No 
 		sprintf(fullpathdemofilename, "%s", d);
 	}
-
+    SDL_LockDisplay();
 // CTW - MODIFICATION
 //  if ((frecfilep = fopen(d,"wb")) == -1) return;
     if ((frecfilep = fopen(fullpathdemofilename,"wb")) == NULL) return;
@@ -8771,7 +8775,7 @@ void opendemowrite(void)
 		// FIX_00080: Out Of Synch in demos. Tries recovering OOS in old demos v27/28/29/116/117/118. New: v30/v119.
 		fwrite(ud.wchoice[i],sizeof(ud.wchoice[0]),1,frecfilep);
 	}
-
+    SDL_UnlockDisplay();
     totalreccnt = 0;
     ud.reccnt = 0;
 }
@@ -8794,8 +8798,9 @@ void record(void)
 
 void closedemowrite(void)
 {
-         if (ud.recstat == 1)
-         {
+    SDL_LockDisplay();
+    if (ud.recstat == 1)
+    {
         if (ud.reccnt > 0)
         {
             dfwrite(recsync,sizeof(input)*ud.multimode,ud.reccnt/ud.multimode,frecfilep);
@@ -8807,6 +8812,7 @@ void closedemowrite(void)
         fclose(frecfilep);
         frecfilep = NULL;
     }
+    SDL_UnlockDisplay();
 }
 
 // CTW - MODIFICATION

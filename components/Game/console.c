@@ -3,6 +3,7 @@
 #include "cvars.h"
 #include "cvar_defs.h"
 #include <stdarg.h>
+#include "SDL.h" 
 
 // For autoexec.cfg
 #include <stdio.h>
@@ -93,7 +94,7 @@ void CONSOLE_ParseStartupScript()
 {
 	// FIX_00017: heavy autoexec.cfg not needed anymore.
     char  *sStartupScript = "startup.cfg";
-
+    SDL_LockDisplay();
     FILE* fp = fopen(sStartupScript, "r");
 
     // If the file exists
@@ -110,6 +111,7 @@ void CONSOLE_ParseStartupScript()
         }
         fclose(fp);
     }
+    SDL_UnlockDisplay();
 }
 
 void CONSOLE_HandleInput()

@@ -45,6 +45,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "driver/gpio.h"
+#include "driver/adc.h"
 
 #include "begin_code.h"
 /* Set up for C function definitions, even when using C++ */

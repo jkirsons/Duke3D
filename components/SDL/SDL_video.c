@@ -188,22 +188,31 @@ SemaphoreHandle_t display_mutex = NULL;
 
 void SDL_LockDisplay()
 {
-    if (!display_mutex)
+    if (display_mutex == NULL)
     {
+        printf("Creating display mutex.\n");
         display_mutex = xSemaphoreCreateMutex();
-        if (!display_mutex) abort();
+        if (!display_mutex) 
+            abort();
+        //xSemaphoreGive(display_mutex);
     }
 
-    if (xSemaphoreTake(display_mutex, 10000 / portTICK_RATE_MS) != true)
+    if (!xSemaphoreTake(display_mutex, 60000 / portTICK_RATE_MS))
     {
-        printf("Timeout waiting for display lock.");
+        printf("Timeout waiting for display lock.\n");
         abort();
     }
+    //printf("L");   
+    //taskYIELD(); 
 }
 
 void SDL_UnlockDisplay()
 {
-    if (!display_mutex) abort();
+    if (!display_mutex) 
+        abort();
+    if (!xSemaphoreGive(display_mutex))
+        abort();
 
-    xSemaphoreGive(display_mutex);
+    //printf("U ");
+    //taskYIELD();
 }

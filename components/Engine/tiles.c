@@ -146,7 +146,7 @@ void loadtile(short tilenume)
     }
     
     if (tiles[tilenume].data == NULL){
-        tiles[tilenume].lock = 199;
+        tiles[tilenume].lock = 199
         allocache(&tiles[tilenume].data,tileFilesize,(uint8_t  *) &tiles[tilenume].lock);
     }
     

@@ -34,8 +34,10 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 
 #include "esp_attr.h"
 
+#include "SDL.h"
+
 char  *mymembuf;
-EXT_RAM_ATTR uint8_t  MusicPtr[72000];
+EXT_RAM_ATTR uint8_t  MusicPtr[1];//72000
 
 
 crc32_t crc32lookup[] = {
@@ -363,7 +365,9 @@ int _dos_findfirst(char  *filename, int x, struct find_t *f)
     else
     {
         *ptr = '\0';
+        SDL_LockDisplay();
         f->dir = opendir(f->pattern);
+        SDL_UnlockDisplay();
         memmove(f->pattern, ptr + 1, strlen(ptr + 1) + 1);
     }
 
@@ -414,7 +418,7 @@ int _dos_findnext(struct find_t *f)
 
     if (f->dir == NULL)
         return(1);  /* no such dir or we're just done searching. */
-
+    SDL_LockDisplay();
     while ((dent = readdir(f->dir)) != NULL)
     {
         if (check_pattern_nocase(f->pattern, dent->d_name))
@@ -428,6 +432,7 @@ int _dos_findnext(struct find_t *f)
     }
 
     closedir(f->dir);
+    SDL_UnlockDisplay();
     f->dir = NULL;
     return(1);  /* no match in whole directory. */
 }
@@ -548,9 +553,11 @@ void write2disk(int line, char * cfilename, char  *filename2write, char  *messag
 		}
 		filename[k++]=(cfilename[i]=='.')?0:cfilename[i];
 	}
+    SDL_LockDisplay();
 	pFile = fopen(filename2write,"a");
 	fprintf(pFile,"%-4d %-5s %s", line, filename, message);
 	fclose(pFile);
+    SDL_UnlockDisplay();
 }
 
 int32 SafeOpenAppend (const char  *_filename, int32 filetype)
@@ -561,13 +568,13 @@ int32 SafeOpenAppend (const char  *_filename, int32 filetype)
     strncpy(filename, _filename, sizeof (filename));
     filename[sizeof (filename) - 1] = '\0';
     FixFilePath(filename);
-
+    SDL_LockDisplay();
 #if (defined PLATFORM_WIN32)
     handle = open(filename,O_RDWR | O_BINARY | O_CREAT | O_APPEND );
 #else
 	handle = open(filename,O_RDWR | O_BINARY | O_CREAT | O_APPEND , S_IREAD | S_IWRITE);
 #endif
-
+    SDL_UnlockDisplay();
 	if (handle == -1)
 		Error (EXIT_FAILURE, "Error opening for append %s: %s",filename,strerror(errno));
 
@@ -580,12 +587,15 @@ boolean SafeFileExists ( const char  * _filename )
     strncpy(filename, _filename, sizeof (filename));
     filename[sizeof (filename) - 1] = '\0';
     FixFilePath(filename);
-
+    SDL_LockDisplay();
+    int ret;
 #if( defined PLATFORM_WIN32)
-        return(access(filename, 6) == 0);
+    ret = access(filename, 6)      
 #else
-    return(access(filename, F_OK) == 0);
+    ret = access(filename, F_OK);
 #endif
+    SDL_UnlockDisplay();
+    return( ret == 0);
 }
 
 
@@ -596,14 +606,14 @@ int32 SafeOpenWrite (const char  *_filename, int32 filetype)
     strncpy(filename, _filename, sizeof (filename));
     filename[sizeof (filename) - 1] = '\0';
     FixFilePath(filename);
-
+    SDL_LockDisplay();
 #if (defined PLATFORM_WIN32)
     handle = open(filename,O_RDWR | O_BINARY | O_CREAT | O_TRUNC );
 #else
 	handle = open(filename,O_RDWR | O_BINARY | O_CREAT | O_TRUNC
 	, S_IREAD | S_IWRITE);
 #endif
-
+    SDL_UnlockDisplay();
 	if (handle == -1)
 		Error (EXIT_FAILURE, "Error opening %s: %s",filename,strerror(errno));
 
@@ -620,9 +630,9 @@ int32 SafeOpenRead (const char  *_filename, int32 filetype)
     strncpy(filename, _filename, sizeof (filename));
     filename[sizeof (filename) - 1] = '\0';
     FixFilePath(filename);
-
+    SDL_LockDisplay();
 	handle = open(filename,O_RDONLY | O_BINARY);
-
+    SDL_UnlockDisplay();
 	if (handle == -1)
 		Error (EXIT_FAILURE, "Error opening %s: %s",filename,strerror(errno));
 
@@ -633,7 +643,7 @@ int32 SafeOpenRead (const char  *_filename, int32 filetype)
 void SafeRead (int32 handle, void *buffer, int32 count)
 {
 	unsigned	iocount;
-
+    SDL_LockDisplay();
 	while (count)
 	{
 		iocount = count > 0x8000 ? 0x8000 : count;
@@ -642,13 +652,14 @@ void SafeRead (int32 handle, void *buffer, int32 count)
 		buffer = (void *)( (byte *)buffer + iocount );
 		count -= iocount;
 	}
+    SDL_UnlockDisplay();
 }
 
 
 void SafeWrite (int32 handle, void *buffer, int32 count)
 {
 	unsigned	iocount;
-
+    SDL_LockDisplay();
 	while (count)
 	{
 		iocount = count > 0x8000 ? 0x8000 : count;
@@ -657,15 +668,18 @@ void SafeWrite (int32 handle, void *buffer, int32 count)
 		buffer = (void *)( (byte *)buffer + iocount );
 		count -= iocount;
 	}
+    SDL_UnlockDisplay();
 }
 
 void SafeWriteString (int handle, char  * buffer)
 {
 	unsigned	iocount;
 
-   iocount=strlen(buffer);
+    iocount=strlen(buffer);
+    SDL_LockDisplay();
 	if (write (handle,buffer,iocount) != (int)iocount)
 			Error (EXIT_FAILURE, "File write string failure writing %s\n",buffer);
+    SDL_UnlockDisplay();
 }
 
 void *SafeMalloc (int32_t size)

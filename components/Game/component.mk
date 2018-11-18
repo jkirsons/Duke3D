@@ -10,4 +10,4 @@
 #include $(IDF_PATH)/make/component_common.mk
 
 COMPONENT_ADD_INCLUDEDIRS += ../Engine ../SDL ../audiolib
-CFLAGS += -Wno-error=maybe-uninitialized
+CFLAGS += -D LOG_LOCAL_LEVEL=ESP_LOG_ERROR -Wno-error=maybe-uninitialized

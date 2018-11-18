@@ -4,6 +4,9 @@
 #include "SDL.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/queue.h"
+#include "freertos/semphr.h"
+#include "freertos/event_groups.h"
 #include "esp_system.h"
 #include <errno.h>
 
@@ -123,6 +126,7 @@ SDL_Rect **SDL_ListModes(SDL_PixelFormat *format, Uint32 flags);
 SDL_VideoInfo *SDL_GetVideoInfo(void);
 char *SDL_VideoDriverName(char *namebuf, int maxlen);
 
+extern SemaphoreHandle_t display_mutex;
 void SDL_LockDisplay();
 void SDL_UnlockDisplay();
 

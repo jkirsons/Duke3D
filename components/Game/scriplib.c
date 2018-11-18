@@ -33,7 +33,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "duke3d.h"
 #include "scriplib.h"
 
-/* #define DEBUG_SCRIPLIB */
+#include "SDL.h"
+#define _Bool boolean
 
 #define MAX_SCRIPTS 5
 
@@ -402,9 +403,13 @@ int32 SCRIPT_Load ( char  * filename )
 	/* The main program does not check for any sort of */
 	/* error in loading, so each SCRIPT_ function needs */
 	/* to check if the handle is -1 before doing anything */
+	SDL_LockDisplay();
 	fp = fopen (filename, "r");
 
-	if (fp == NULL) return -1;
+	if (fp == NULL){
+		SDL_UnlockDisplay();
+		return -1;
+	} 
 
 	/* Start loading the script */
 	/* Loads and parse the entire file into a tree */
@@ -470,7 +475,7 @@ int32 SCRIPT_Load ( char  * filename )
 	}
 
 	fclose (fp);
-
+	SDL_UnlockDisplay();
 	return script_nexthandle++;	/* postincrement is important here */
 }
 
@@ -489,14 +494,18 @@ void SCRIPT_Save (int32 scripthandle, char*  filename)
 	if(scripthandle >= MAX_SCRIPTS || scripthandle < 0)
 		return;
 
+	SDL_LockDisplay();
 	fp = fopen (filename, "w");
-	if (fp == NULL) return;
+	if (fp == NULL) {
+		SDL_UnlockDisplay();
+		return;
+	}
 
 	head = script_headnode[scripthandle];
 	SCRIPT_recursivewrite (head, fp);
 
 	fclose (fp);
-
+	SDL_UnlockDisplay();
 }
 
 

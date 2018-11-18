@@ -1,6 +1,9 @@
 {
     "files.associations": {
         "limits": "c",
-        "istream": "c"
+        "istream": "c",
+        "__locale": "c",
+        "string": "c",
+        "ios": "c"
     }
 }

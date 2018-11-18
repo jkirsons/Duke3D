@@ -34,6 +34,8 @@ Prepared for public release: 03/21/2003 - Charlie Wiederhold, 3D Realms
 #include "premap.h"
 #include "display.h"
 
+static const char* TAG = "menues";
+
 extern SDL_Surface *surface;
 extern short inputloc;
 extern int recfilep;
@@ -4614,24 +4616,28 @@ void playanm(char  *fn,uint8_t  t)
     int32_t i, j, k, length=0, numframes=0;
     int32 handle=-1;
 
+ESP_LOGV(TAG, "KB_FlushKeyboardQueue");
     if(t != 7 && t != 9 && t != 10 && t != 11)
         KB_FlushKeyboardQueue();
 
+ESP_LOGV(TAG, "KB_KeyWaiting");
     if( KB_KeyWaiting() )
     {
         FX_StopAllSounds();
         goto ENDOFANIMLOOP;
     }
-
+ESP_LOGV(TAG, "TCkopen4load");
     handle = TCkopen4load(fn,0);
 
     if(handle == -1) 
 		return;
 
+ESP_LOGV(TAG, "kfilelength");
     length = kfilelength(handle);
 
     tiles[MAXTILES-3-t].lock = 219+t;
 
+ESP_LOGV(TAG, "allocache");
     if(anim == 0 || lastanimhack != (MAXTILES-3-t))
         allocache((uint8_t**)&anim,length+sizeof(anim_t),&tiles[MAXTILES-3-t].lock);
 
@@ -4642,12 +4648,16 @@ void playanm(char  *fn,uint8_t  t)
     tiles[MAXTILES-3-t].dim.width = 200;
     tiles[MAXTILES-3-t].dim.height = 320;
 
+ESP_LOGV(TAG, "kread");
     kread(handle,animbuf,length);
+ESP_LOGV(TAG, "kclose");
     kclose(handle);
 
+ESP_LOGV(TAG, "ANIM_LoadAnim");
     ANIM_LoadAnim (animbuf);
     numframes = ANIM_NumFrames();
 
+ESP_LOGV(TAG, "ANIM_GetPalette");
     palptr = ANIM_GetPalette();
     for(i=0;i<256;i++)
     {
@@ -4658,6 +4668,7 @@ void playanm(char  *fn,uint8_t  t)
             tempbuf[j+3] = 0;
     }
 
+ESP_LOGV(TAG, "VBE_setPalette");
     VBE_setPalette(tempbuf);
 
     ototalclock = totalclock + 10;
@@ -4666,6 +4677,7 @@ void playanm(char  *fn,uint8_t  t)
     {
        while(totalclock < ototalclock)
        {
+ESP_LOGV(TAG, "KB_KeyWaiting");
           if( KB_KeyWaiting() )
               goto ENDOFANIMLOOP;
           getpackets();
@@ -4681,8 +4693,11 @@ void playanm(char  *fn,uint8_t  t)
        else if(ud.volume_number == 1) ototalclock += 18;
        else                           ototalclock += 10;
 
+ESP_LOGV(TAG, "ANIM_DrawFrame");
        tiles[MAXTILES-3-t].data = ANIM_DrawFrame(i);
+ESP_LOGV(TAG, "rotatesprite");
        rotatesprite(0<<16,0<<16,65536L,512,MAXTILES-3-t,0,0,2+4+8+16+64, 0,0,xdim-1,ydim-1);
+ESP_LOGV(TAG, "nextpage");
        nextpage();
 
        if(t == 8) endanimvol41(i);
@@ -4697,6 +4712,7 @@ void playanm(char  *fn,uint8_t  t)
 
     ENDOFANIMLOOP:
 
+ESP_LOGV(TAG, "ANIM_FreeAnim");
     ANIM_FreeAnim ();
     tiles[MAXTILES-3-t].lock = 1;
 }

@@ -20,16 +20,14 @@ and
 On your SD Card, put all of the files from Duke Nukem 3D v1.5 (or lower) into a folder called "duke3d".
 
 ## ODROID-GO - Flash by Firmware File
-- Copy /release/Duke3D.fw from the GitHub repository to /odroid/firmware/Duke3D.fw on the SD Card.
+- Copy /release/Duke3D.fw (https://github.com/jkirsons/Duke3D/raw/master/release/Duke3D.fw) from the GitHub repository to /odroid/firmware/Duke3D.fw on the SD Card.
 - Power off the ODROID-GO, hold B, and power on the ODROID-GO.
 - When the ODROID-GO menu displays, select Duke3D, press A, then press Start.
 - It should take about 20 seconds to flash, and 30 seconds to load to the first intro screen.
 
-## Compiling
-As of 19.11.2018, you cannot use the OtherCrashOveride ESP-IDF, you must use the original ESP-IDF.  
-
-You however must comment out this line:
-https://github.com/espressif/esp-idf/blob/16de6bff245dec5e63eee994f53a08252be720d4/components/driver/sdspi_host.c#L279
+---------------------------------------------------------------------
+### Steps below are not needed if you have flashed by the firmware file
+---------------------------------------------------------------------
 
 ## Configuration
 Run "make menuconfig" and check the settings under ESP32-DUKE3D platform-specific configuration, and either select ODROID-GO:
@@ -37,6 +35,12 @@ Run "make menuconfig" and check the settings under ESP32-DUKE3D platform-specifi
 
 or Custom Hardware, and configure all GPOIs:
 ![Config Image](https://github.com/jkirsons/Duke3D/raw/master/documents/config.png)
+
+## Compiling
+As of 19.11.2018, you cannot use the OtherCrashOveride ESP-IDF, you must use the original ESP-IDF.  
+
+You however must comment out this line:
+https://github.com/espressif/esp-idf/blob/16de6bff245dec5e63eee994f53a08252be720d4/components/driver/sdspi_host.c#L279
 
 ## LEGAL STUFF
 "Duke Nukem" is a registered trademark of Apogee Software, Ltd. (a.k.a. 3D Realms).

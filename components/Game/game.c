@@ -804,7 +804,7 @@ IRAM_ATTR void faketimerhandler()
     
     //YES : Add 120tick
     ototalclock += TICSPERFRAME;
-#if 0    
+  
     //Check network stuff.
     getpackets();
     if (getoutputcirclesize() >= 16)
@@ -1103,7 +1103,7 @@ IRAM_ATTR void faketimerhandler()
 
         movefifosendplc += movesperpacket;
     }
-#endif    
+   
 }
 
 extern int32_t cacnum;

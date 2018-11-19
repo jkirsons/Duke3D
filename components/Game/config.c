@@ -232,7 +232,7 @@ void CONFIG_SetDefaults( void )
 
    // game
    ps[0].aim_mode = 0;
-   ud.screen_size = 20; //8
+   ud.screen_size = 8; //8
    ud.extended_screen_size = 0;
    ud.screen_tilting = 1;
    ud.brightness = 16;
@@ -241,7 +241,7 @@ void CONFIG_SetDefaults( void )
    ud.tickrate = 0;
    ud.scrollmode = 0;
    ud.shadows = 0;
-   ud.detail = 0; //1
+   ud.detail = 1; //1
    ud.lockout = 0;
    ud.pwlockout[0] = '\0';
    ud.crosshair = 1;

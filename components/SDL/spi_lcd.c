@@ -355,10 +355,10 @@ void IRAM_ATTR displayTask(void *arg) {
 
     SDL_LockDisplay();
     //Initialize the SPI bus
-    ret=spi_bus_initialize(CONFIG_HW_LCD_MISO_GPIO == 19 ? VSPI_HOST : HSPI_HOST, &buscfg, 2);  // DMA Channel
+    ret=spi_bus_initialize(/*CONFIG_HW_LCD_MISO_GPIO == 19 ? VSPI_HOST :*/ HSPI_HOST, &buscfg, 2);  // DMA Channel
     assert(ret==ESP_OK);
     //Attach the LCD to the SPI bus
-    ret=spi_bus_add_device(CONFIG_HW_LCD_MISO_GPIO == 19 ? VSPI_HOST : HSPI_HOST, &devcfg, &spi);
+    ret=spi_bus_add_device(/*CONFIG_HW_LCD_MISO_GPIO == 19 ? VSPI_HOST :*/ HSPI_HOST, &devcfg, &spi);
     assert(ret==ESP_OK);
     //Initialize the LCD
     ili_init(spi);

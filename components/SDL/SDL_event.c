@@ -14,19 +14,19 @@ static const GPIOKeyMap keymap[2][6]={{
 // Game    
 	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_LCTRL, SDLK_LCTRL},			
 	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_SPACE, SDLK_SPACE},	
-	{CONFIG_HW_BUTTON_PIN_NUM_MENU, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
-	{CONFIG_HW_BUTTON_PIN_NUM_SELECT, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
-	{CONFIG_HW_BUTTON_PIN_NUM_START, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
 	{CONFIG_HW_BUTTON_PIN_NUM_VOL, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},		
+	{CONFIG_HW_BUTTON_PIN_NUM_MENU, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_START, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_SELECT, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
 },
 // Menu
 {
-	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},			
 	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON1, SDL_SCANCODE_SPACE, SDLK_SPACE}, 	
-	{CONFIG_HW_BUTTON_PIN_NUM_MENU, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
-	{CONFIG_HW_BUTTON_PIN_NUM_SELECT, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
-	{CONFIG_HW_BUTTON_PIN_NUM_START, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_BUTTON2, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},			
 	{CONFIG_HW_BUTTON_PIN_NUM_VOL, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	    
+	{CONFIG_HW_BUTTON_PIN_NUM_MENU, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_START, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
+	{CONFIG_HW_BUTTON_PIN_NUM_SELECT, SDL_SCANCODE_ESCAPE, SDLK_ESCAPE},	
 }};
 #else
 static const GPIOKeyMap keymap[2][6]={{
@@ -60,9 +60,10 @@ typedef struct
     uint8_t right;
     uint8_t down;
     uint8_t left;
+    uint8_t buttons[6];
 } JoystickState;
 
-JoystickState lastState = {0,0,0,0};
+JoystickState lastState = {0,0,0,0,{0,0,0,0,0,0}};
 
 typedef struct {
     Uint32 type;        /**< ::SDL_KEYDOWN or ::SDL_KEYUP */
@@ -70,7 +71,38 @@ typedef struct {
     SDL_Scancode keycode;
 } GPIOEvent;
 
+bool initInput = false;
+
 static xQueueHandle gpio_evt_queue = NULL;
+
+int checkPin(int state, uint8_t *lastState, SDL_Scancode sc, SDL_Keycode kc, SDL_Event *event)
+{
+    if(state != *lastState)
+    {
+        *lastState = state;
+        event->key.keysym.scancode = sc;
+        event->key.keysym.sym = kc;
+        event->key.type = state ? SDL_KEYDOWN : SDL_KEYUP;
+        event->key.state = state ? SDL_PRESSED : SDL_RELEASED;
+        return 1;
+    }
+    return 0;
+}
+
+int checkPinStruct(int i, uint8_t *lastState, SDL_Event *event)
+{
+    int state = 1-gpio_get_level(keymap[keyMode][i].gpio);
+    if(state != *lastState)
+    {
+        *lastState = state;
+        event->key.keysym.scancode = keymap[keyMode][i].scancode;
+        event->key.keysym.sym = keymap[keyMode][i].keycode;
+        event->key.type = state ? SDL_KEYDOWN : SDL_KEYUP;
+        event->key.state = state ? SDL_PRESSED : SDL_RELEASED;
+        return 1;
+    }
+    return 0;
+}
 
 int readOdroidXY(SDL_Event * event)
 {
@@ -111,50 +143,28 @@ int readOdroidXY(SDL_Event * event)
     }    
     
     event->key.keysym.mod = 0;
-    if(state.up != lastState.up)
-    {
-        lastState.up = state.up;
-        event->key.keysym.scancode = SDL_SCANCODE_UP;
-        event->key.keysym.sym = SDLK_UP;
-        event->key.type = state.up ? SDL_KEYDOWN : SDL_KEYUP;
-        event->key.state = state.up ? SDL_PRESSED : SDL_RELEASED;
+    if(checkPin(state.up, &lastState.up, SDL_SCANCODE_UP, SDLK_UP, event))
         return 1;
-    }
-    if(state.down != lastState.down)
-    {
-        lastState.down = state.down;
-        event->key.keysym.scancode = SDL_SCANCODE_DOWN;
-        event->key.keysym.sym = SDLK_DOWN;
-        event->key.type = state.down ? SDL_KEYDOWN : SDL_KEYUP;
-        event->key.state = state.down ? SDL_PRESSED : SDL_RELEASED;
+    if(checkPin(state.down, &lastState.down, SDL_SCANCODE_DOWN, SDLK_DOWN, event))
         return 1;
-    }
-    if(state.left != lastState.left)
-    {
-        lastState.left = state.left;
-        event->key.keysym.scancode = SDL_SCANCODE_LEFT;
-        event->key.keysym.sym = SDLK_LEFT;
-        event->key.type = state.left ? SDL_KEYDOWN : SDL_KEYUP;
-        event->key.state = state.left ? SDL_PRESSED : SDL_RELEASED;
+    if(checkPin(state.left, &lastState.left, SDL_SCANCODE_LEFT, SDLK_LEFT, event))
         return 1;
-    }
-    if(state.right != lastState.right)
-    {
-        lastState.right = state.right;
-        event->key.keysym.scancode = SDL_SCANCODE_RIGHT;
-        event->key.keysym.sym = SDLK_RIGHT;
-        event->key.type = state.right ? SDL_KEYDOWN : SDL_KEYUP;
-        event->key.state = state.right ? SDL_PRESSED : SDL_RELEASED;
+    if(checkPin(state.right, &lastState.right, SDL_SCANCODE_RIGHT, SDLK_RIGHT, event))
         return 1;
-    }    
+
+    for(int i = 0; i < 6; i++)
+        if(checkPinStruct(i, &lastState.buttons[i], event))
+            return 1;
+
     return 0;
 }
 
 int SDL_PollEvent(SDL_Event * event)
 {
-    if(gpio_evt_queue == NULL )
+    if(!initInput)
         inputInit();
 
+#ifndef CONFIG_HW_ODROID_GO
     GPIOEvent ev;
     if(xQueueReceive(gpio_evt_queue, &ev, 0)) {
         event->key.keysym.sym = ev.keycode;
@@ -164,7 +174,7 @@ int SDL_PollEvent(SDL_Event * event)
         event->key.state = ev.type == SDL_KEYDOWN ? SDL_PRESSED : SDL_RELEASED;     //< ::SDL_PRESSED or ::SDL_RELEASED 
         return 1;
     }
-#ifdef CONFIG_HW_ODROID_GO
+#else
     return readOdroidXY(event);
 #endif
     return 0;
@@ -211,7 +221,8 @@ void inputInit()
 	io_conf.mode = GPIO_MODE_INPUT;
     io_conf.pull_up_en = 1;
     gpio_config(&io_conf);
-
+    
+#ifndef CONFIG_HW_ODROID_GO
     //create a queue to handle gpio event from isr
     gpio_evt_queue = xQueueCreate(10, sizeof(GPIOEvent));
     //start gpio task
@@ -223,12 +234,12 @@ void inputInit()
     //hook isr handler
 	for (int i=0; i < NELEMS(keymap[0]); i++)
     	gpio_isr_handler_add(keymap[0][i].gpio, gpio_isr_handler, (void*) keymap[0][i].gpio);
-
-#ifdef CONFIG_HW_ODROID_GO
+#else
 	adc1_config_width(ADC_WIDTH_12Bit);
     adc1_config_channel_atten(ODROID_GAMEPAD_IO_X, ADC_ATTEN_11db);
 	adc1_config_channel_atten(ODROID_GAMEPAD_IO_Y, ADC_ATTEN_11db);
 #endif    
 
 	printf("keyboard: GPIO task created.\n");
+    initInput = true;
 }

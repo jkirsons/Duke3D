@@ -261,6 +261,7 @@ uint8_t  getsound(uint16_t num)
 void precachenecessarysounds(void)
 {
     short i, j;
+    printf("precachenecessarysounds: %d\n", SoundToggle);
 
     if (FXDevice == NumSoundCards) return;
     j = 0;

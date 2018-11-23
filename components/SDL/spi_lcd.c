@@ -319,7 +319,7 @@ SemaphoreHandle_t dispSem = NULL;
 SemaphoreHandle_t dispDoneSem = NULL;
 
 #define NO_SIM_TRANS 5 //Amount of SPI transfers to queue in parallel
-#define MEM_PER_TRANS 320*4 //in 16-bit words
+#define MEM_PER_TRANS 320*2 //in 16-bit words
 
 int16_t lcdpal[256];
 
@@ -346,6 +346,7 @@ void IRAM_ATTR displayTask(void *arg) {
         .spics_io_num=PIN_NUM_CS,               //CS pin
         .queue_size=NO_SIM_TRANS,               //We want to be able to queue this many transfers
         .pre_cb=ili_spi_pre_transfer_callback,  //Specify pre-transfer callback to handle D/C line
+        .flags = SPI_DEVICE_NO_DUMMY,
     };
 
 	printf("*** Display task starting.\n");

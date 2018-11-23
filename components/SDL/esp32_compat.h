@@ -37,6 +37,7 @@
     #define IP_RECVERR  SO_BROADCAST
 
     #define USER_DUMMY_NETWORK 1
+    #define STUB_NETWORKING 1
 
     #define STUBBED(x) fprintf(stderr,"STUB: %s (%s, %s:%d)\n",x,__FUNCTION__,__FILE__,__LINE__)
 

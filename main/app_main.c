@@ -15,8 +15,8 @@
 
 void dukeTask(void *pvParameters)
 {
-    char *argv[]={"", NULL};
-    main(1, argv);
+    char *argv[]={"duke3d", "/ns", "/nm", NULL};
+    main(3, argv);
 }
 
 

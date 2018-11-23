@@ -48,7 +48,7 @@ static char menuname[256][17];
 
 // File tree info
 //
-uint8_t  szCurrentDirectory[1024] = {'\0'};
+//uint8_t  szCurrentDirectory[1024] = {'\0'};
 
 #define FILETYPE_DIRECTORY 0
 #define FILETYPE_FILE      1

@@ -876,10 +876,11 @@ uint8_t  *ultoa(uint32_t value, uint8_t  *string, int radix)
 }
 #endif
 
-EXT_RAM_ATTR char  ApogeePath[256];
+
 
 int setup_homedir (void)
 {
+    char  ApogeePath[256];
 #if PLATFORM_UNIX
 	int err;
 

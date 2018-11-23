@@ -17,6 +17,8 @@
 #include "esp_attr.h"
 #include "SDL.h"
 
+#include "duke3d.h"
+
 extern char game_dir[512];
 
 //The multiplayer module in game.dll needs direct access to the crc32 (sic).
@@ -151,7 +153,27 @@ int32_t initgroupfile(const char  *filename)
 */	SDL_UnlockDisplay();
 	printf("\n");
     free(crcBuffer);
-	
+
+// Instead of CRCs, use filesizes...
+	int32_t length = filelength(archive->fileDescriptor);
+	if(length == 44356548)
+	{
+		archive->crc32=CRC_BASE_GRP_ATOMIC_15;
+		printf("Version: Atomic 1.5\n");
+	} else if(length == 11035779)
+	{
+		archive->crc32=CRC_BASE_GRP_SHAREWARE_13;
+		printf("Version: Shareware 1.3\n");
+	} else {
+		archive->crc32=CRC_BASE_GRP_ATOMIC_15;
+	}
+/*
+	archive->crc32=CRC_BASE_GRP_SHAREWARE_13 
+	archive->crc32=CRC_BASE_GRP_FULL_13 
+	archive->crc32=CRC_BASE_GRP_PLUTONIUM_14 
+	archive->crc32=CRC_BASE_GRP_ATOMIC_15 
+*/
+
     // The game layer seems to absolutely need to access an array int[4] groupefil_crc32
     // so we need to store the crc32 in there too.
     groupefil_crc32[grpSet.num] = archive->crc32;
@@ -717,7 +739,7 @@ void dfwrite(void *buffer, size_t dasizeof, size_t count, FILE *fil)
 
 
 
-int SafeFileExists ( const char  * _filename );
+//int SafeFileExists ( const char  * _filename );
 int32_t TCkopen4load(const char  *filename, int readfromGRP)
 {
 	char  fullfilename[512];

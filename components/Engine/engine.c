@@ -60,12 +60,10 @@ int32_t curbrightness = 0;
 
 /* Textured Map variables */
 static uint8_t  globalpolytype;
-EXT_RAM_ATTR static short *dotp1[MAXYDIM], *dotp2[MAXYDIM];
 
 EXT_RAM_ATTR static char tempbuf[MAXWALLS];
 
 int32_t ebpbak, espbak;
-EXT_RAM_ATTR int32_t slopalookup[16384];
 
 /*
  * !!! used to be static. If we ever put the original setgamemode() back, this
@@ -159,7 +157,7 @@ static int32_t smostwallcnt = -1L;
 EXT_RAM_ATTR static short maskwall[MAXWALLSB], maskwallcnt;
 EXT_RAM_ATTR static int32_t spritesx[MAXSPRITESONSCREEN];
 EXT_RAM_ATTR static int32_t spritesy[MAXSPRITESONSCREEN+1];
-EXT_RAM_ATTR static int32_t spritesz[MAXSPRITESONSCREEN];
+
 EXT_RAM_ATTR static spritetype *tspriteptr[MAXSPRITESONSCREEN];
 
 //FCS: (up-most pixel on column x that can still be drawn to)
@@ -1733,6 +1731,7 @@ static void grouscan (int32_t dax1, int32_t dax2, int32_t sectnum, uint8_t  dast
     int32_t shoffs, shinc, m1, m2, *mptr1, *mptr2, *nptr1, *nptr2;
     walltype *wal;
     sectortype *sec;
+    int32_t slopalookup[16384];
 
     sec = &sector[sectnum];
 
@@ -5703,6 +5702,7 @@ IRAM_ATTR static void drawsprite (int32_t snum)
 IRAM_ATTR void drawmasks(void)
 {
     int32_t i, j, k, l, gap, xs, ys, xp, yp, yoff, yspan;
+    static int32_t spritesz[MAXSPRITESONSCREEN];
     /* int32_t zs, zp; */
 
     //Copy sprite address in a sprite proxy structure (pointers are easier to re-arrange than structs).
@@ -8277,6 +8277,7 @@ static void fillpolygon(int32_t npoints)
     int32_t z, zz, x1, y1, x2, y2, miny, maxy, y, xinc, cnt;
     int32_t ox, oy, bx, by, p, day1, day2;
     short *ptr, *ptr2;
+    static short *dotp1[MAXYDIM], *dotp2[MAXYDIM];
 
     miny = 0x7fffffff;
     maxy = 0x80000000;

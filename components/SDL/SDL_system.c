@@ -3,6 +3,7 @@
 struct SDL_mutex
 {
     pthread_mutex_t id;
+    SemaphoreHandle_t handle;
 #if FAKE_RECURSIVE_MUTEX
     int recursive;
     pthread_t owner;
@@ -103,16 +104,20 @@ void SDL_DestroyMutex(SDL_mutex* mutex)
 
 SDL_mutex* SDL_CreateMutex(void)
 {
-    SDL_mutex* mut = NULL;
+    SDL_mutex* mut = malloc(sizeof(SDL_mutex));
+    mut->handle = xSemaphoreCreateMutex();
+    //mut->handle = xSemaphoreCreateBinary();
     return mut;
 }
 
 int SDL_LockMutex(SDL_mutex* mutex)
 {
+    xSemaphoreTake(mutex->handle, 1000 / portTICK_RATE_MS);
     return 0;
 }
 
 int SDL_UnlockMutex(SDL_mutex* mutex)
 {
+    xSemaphoreGive(mutex->handle);
     return 0;
 }

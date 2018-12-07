@@ -196,7 +196,7 @@ double MixREVERBRight(void)
 	return (double)iRVBRight;
 }
 
-void MV_FPReverb(int volume)
+IRAM_ATTR void MV_FPReverb(int volume)
 {
 	int i, count = MV_BufferSize / MV_SampleSize * MV_Channels;
 

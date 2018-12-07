@@ -15,8 +15,13 @@
 
 void dukeTask(void *pvParameters)
 {
-    char *argv[]={"duke3d", "/ns", "/nm", NULL};
-    main(3, argv);
+    char *argv[]={"duke3d", "/nm", NULL};
+    main(2, argv);
+
+    // no sound
+//    char *argv[]={"duke3d", "/ns", "/nm", NULL};
+//    main(3, argv);
+   
 }
 
 

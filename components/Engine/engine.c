@@ -1928,7 +1928,7 @@ static void grouscan (int32_t dax1, int32_t dax2, int32_t sectnum, uint8_t  dast
 }
 
 
-IRAM_ATTR static int owallmost(short *mostbuf, int32_t w, int32_t z)
+static int owallmost(short *mostbuf, int32_t w, int32_t z)
 {
     int32_t bad, inty, xcross, y, yinc;
     int32_t s1, s2, s3, s4, ix1, ix2, iy1, iy2, t;
@@ -2733,7 +2733,7 @@ IRAM_ATTR int wallfront(int32_t pvWallID1, int32_t pvWallID2)
 
 
 //Return 1 if bunch firstBunchID is in from of bunch secondBunchID.
-IRAM_ATTR static int bunchfront(int32_t firstBunchID, int32_t secondBunchID)
+static int bunchfront(int32_t firstBunchID, int32_t secondBunchID)
 {
     int32_t x1b1, x2b1, x1b2, x2b2;
 
@@ -4632,7 +4632,7 @@ __inline int ksqrt(int32_t num)
 
 
 
-IRAM_ATTR static void drawmaskwall(short damaskwallcnt)
+static void drawmaskwall(short damaskwallcnt)
 {
     int32_t i, j, k, x, z, sectnum, z1, z2, lx, rx;
     sectortype *sec, *nsec;
@@ -5701,7 +5701,7 @@ IRAM_ATTR static void drawsprite (int32_t snum)
 /*
      FCS: Draw every transparent sprites in Back To Front Order. Also draw decals on the walls...
  */
-IRAM_ATTR void drawmasks(void)
+void drawmasks(void)
 {
     int32_t i, j, k, l, gap, xs, ys, xp, yp, yoff, yspan;
     /* int32_t zs, zp; */
@@ -8047,7 +8047,7 @@ void flushperms(void)
 
 // Render a sprite on screen. This is used by the Engine but also the Game module
 // when drawing the HUD or the Weapon held by the player !!!
-IRAM_ATTR void rotatesprite(int32_t sx, int32_t sy, int32_t z, short a, short picnum,
+void rotatesprite(int32_t sx, int32_t sy, int32_t z, short a, short picnum,
                   int8_t dashade, uint8_t  dapalnum, uint8_t  dastat,
                   int32_t cx1, int32_t cy1, int32_t cx2, int32_t cy2)
 {

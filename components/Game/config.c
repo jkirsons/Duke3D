@@ -215,17 +215,22 @@ int32 CONFIG_AnalogNameToNum( char  * func )
 void CONFIG_SetDefaults( void )
 {
    // sound
-   SoundToggle = 0;
-   MusicToggle = 0;
-   VoiceToggle = 0;
-   AmbienceToggle = 0;
-   OpponentSoundToggle = 0;
+   SoundToggle = 1;
+   MusicToggle = 1;
+   VoiceToggle = 1;
+   AmbienceToggle = 1;
+   OpponentSoundToggle = 1;
    FXVolume = 220;
    MusicVolume = 200;
    FXDevice = SoundScape;
    MusicDevice = -1;
    ReverseStereo = 0;
    
+   NumVoices = 32;
+   NumChannels = 1;
+   NumBits = 16;
+   MixRate = 44100;
+
    // mouse
    mouseSensitivity_X = 16;
    mouseSensitivity_Y = mouseSensitivity_X;
@@ -713,16 +718,22 @@ void CONFIG_ReadSetup( void )
 //            (ScreenMode has no meaning anymore)
 
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "FXVolume",&FXVolume);
+   if(FXVolume > 255)
+      FXVolume = 255;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicVolume",&MusicVolume);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "SoundToggle",&SoundToggle);
+   if(SoundToggle > 1)
+      SoundToggle = 1;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MusicToggle",&MusicToggle);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "VoiceToggle",&VoiceToggle);
+   if(VoiceToggle > 1)
+      VoiceToggle = 1;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "AmbienceToggle",&AmbienceToggle);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "OpponentSoundToggle",&OpponentSoundToggle);   
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumVoices",&NumVoices);
    NumVoices = 32;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumChannels",&NumChannels);
-   NumChannels = 2;
+   NumChannels = 1;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumBits",&NumBits);
    NumBits = 16;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MixRate",&MixRate);
@@ -784,7 +795,7 @@ void CONFIG_ReadSetup( void )
             {
 				CONFIG_SetupMouse(scripthandle);
 			}
-      }
+   }   
    setupread = 1;
    }
 

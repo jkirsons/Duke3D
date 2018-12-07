@@ -200,7 +200,7 @@ void uninitgroupfile(void)
     
 }
 
-IRAM_ATTR void crc32_table_gen(unsigned int* crc32_table) /* build CRC32 table */
+void crc32_table_gen(unsigned int* crc32_table) /* build CRC32 table */
 {
     unsigned int crc, poly;
     int	i, j;
@@ -228,7 +228,7 @@ unsigned int crc32(uint8_t  *buf, unsigned int length)
 	return(crc32_update(buf, length, initial_crc));
 }
 
-IRAM_ATTR unsigned int crc32_update(uint8_t  *buf, unsigned int length, unsigned int crc_to_update)
+unsigned int crc32_update(uint8_t  *buf, unsigned int length, unsigned int crc_to_update)
 {
 	unsigned int crc32_table[256];
     
@@ -298,7 +298,7 @@ typedef struct openFile_s{
 EXT_RAM_ATTR static openFile_t openFiles[MAXOPENFILES];
 
 int32_t kopen4load(const char  *filename, int openOnlyFromGRP){
-    printf("File: %s\n", filename);
+    //printf("File: %s\n", filename);
 	int32_t     i, k;
     int32_t     newhandle;
 

@@ -23,6 +23,8 @@ static int _remainder;
 //static Mix_Chunk *blank;
 static unsigned char *blank_buf;
 
+static SDL_AudioCVT audio_cvt; // used for format conversion
+
 /*
 possible todo ideas: cache sdl/sdl mixer error messages.
 */
@@ -66,26 +68,12 @@ static void DSL_SetErrorCode(int ErrorCode)
 	DSL_ErrorCode = ErrorCode;
 }
 
-int DSL_Init( void )
+IRAM_ATTR void audio_cb( void *udata, unsigned char *stream, int len )
+//static void mixer_callback(int chan, void *stream, int len, void *udata)
 {
-	DSL_SetErrorCode(DSL_Ok);
-	
-	if (SDL_InitSubSystem(SDL_INIT_AUDIO|SDL_INIT_NOPARACHUTE) < 0) {
-		DSL_SetErrorCode(DSL_SDLInitFailure);
+	audio_cvt.buf = stream;
+	audio_cvt.len = len;
 		
-		return DSL_Error;
-	}
-	
-	return DSL_Ok;
-}
-
-void DSL_Shutdown( void )
-{
-	DSL_StopPlayback();
-}
-
-static void mixer_callback(int chan, void *stream, int len, void *udata)
-{
 	Uint8 *stptr;
 	Uint8 *fxptr;
 	int copysize;
@@ -107,9 +95,9 @@ static void mixer_callback(int chan, void *stream, int len, void *udata)
 		
 		stptr += copysize;
 	}
-	
+
 	while (len > 0) {
-		/* new buffer */
+		// new buffer 
 		
 		_CallBackFunc();
 		
@@ -126,6 +114,30 @@ static void mixer_callback(int chan, void *stream, int len, void *udata)
 	}
 	
 	_remainder = len;
+
+
+	SDL_ConvertAudio(&audio_cvt);
+	
+}
+
+int DSL_Init( void )
+{
+	DSL_SetErrorCode(DSL_Ok);
+	
+	if (SDL_InitSubSystem(SDL_INIT_AUDIO|SDL_INIT_NOPARACHUTE) < 0) {
+		DSL_SetErrorCode(DSL_SDLInitFailure);
+		
+		return DSL_Error;
+	}
+	
+
+	
+	return DSL_Ok;
+}
+
+void DSL_Shutdown( void )
+{
+	DSL_StopPlayback();
 }
 
 int   DSL_BeginBufferedPlayback( char *BufferStart,
@@ -186,7 +198,22 @@ int   DSL_BeginBufferedPlayback( char *BufferStart,
 		
 	//Mix_PlayChannel(0, blank, -1);
 	
-	//mixer_initialized = 1;
+	SDL_AudioSpec desired;
+    SDL_AudioSpec obtained;
+
+	desired.freq = 44000;
+	desired.format = AUDIO_S16SYS; //: AUDIO_S8;
+	desired.channels = 1;
+	desired.samples = 2048;
+	desired.callback = audio_cb;
+
+    SDL_OpenAudio(&desired, &obtained);
+
+	SDL_BuildAudioCVT(&audio_cvt, desired.format, desired.channels, desired.freq, obtained.format, obtained.channels, obtained.freq);
+	
+	SDL_PauseAudio(0); // unpause
+
+	mixer_initialized = 1;
 	
 	return DSL_Ok;
 }

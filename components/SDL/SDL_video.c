@@ -72,6 +72,10 @@ int SDL_InitSubSystem(Uint32 flags)
     	spi_lcd_init();
         SDL_CreateRGBSurface(0, 320, 200, 8, 0,0,0,0);
     }
+    if( flags &= SDL_INIT_AUDIO)
+    {
+
+    }
     return 0; // 0 = OK, -1 = Error
 }
 

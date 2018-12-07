@@ -286,7 +286,7 @@ char *MV_ErrorString
    Mixes the sound into the buffer.
 ---------------------------------------------------------------------*/
 
-static void MV_Mix( VoiceNode *voice )
+IRAM_ATTR static void MV_Mix( VoiceNode *voice )
 {
    uint8_t        *start;
    int            length;
@@ -378,7 +378,7 @@ static void MV_Mix( VoiceNode *voice )
    Adds a voice to the play list.
 ---------------------------------------------------------------------*/
 
-void MV_PlayVoice( VoiceNode *voice )
+IRAM_ATTR void MV_PlayVoice( VoiceNode *voice )
 {
    unsigned flags;
 
@@ -398,7 +398,7 @@ void MV_PlayVoice( VoiceNode *voice )
    Removes the voice from the play list and adds it to the free list.
 ---------------------------------------------------------------------*/
 
-void MV_StopVoice( VoiceNode *voice )
+IRAM_ATTR void MV_StopVoice( VoiceNode *voice )
 {
    VoiceNode* pPrev;
    VoiceNode* pNext;
@@ -441,7 +441,7 @@ void MV_StopVoice( VoiceNode *voice )
 
 // static int backcolor = 1;
 
-void MV_ServiceVoc
+IRAM_ATTR void MV_ServiceVoc
 (
  void
  )
@@ -529,7 +529,7 @@ void MV_ServiceVoc
    Interperate the information of a VOC format sound file.
 ---------------------------------------------------------------------*/
 
-playbackstatus MV_GetNextVOCBlock
+IRAM_ATTR playbackstatus MV_GetNextVOCBlock
    (
    VoiceNode *voice
    )
@@ -805,7 +805,7 @@ playbackstatus MV_GetNextVOCBlock
    Controls playback of demand fed data.
 ---------------------------------------------------------------------*/
 
-playbackstatus MV_GetNextDemandFeedBlock
+IRAM_ATTR playbackstatus MV_GetNextDemandFeedBlock
    (
    VoiceNode *voice
    )
@@ -847,7 +847,7 @@ playbackstatus MV_GetNextDemandFeedBlock
    Controls playback of demand fed data.
 ---------------------------------------------------------------------*/
 
-playbackstatus MV_GetNextRawBlock
+IRAM_ATTR playbackstatus MV_GetNextRawBlock
    (
    VoiceNode *voice
    )
@@ -888,7 +888,7 @@ playbackstatus MV_GetNextRawBlock
    Controls playback of demand fed data.
 ---------------------------------------------------------------------*/
 
-playbackstatus MV_GetNextWAVBlock
+IRAM_ATTR playbackstatus MV_GetNextWAVBlock
    (
    VoiceNode *voice
    )
@@ -1271,6 +1271,7 @@ void MV_SetVoicePitch
    // Multiply by MixBufferSize - 1
    voice->FixedPointBufferSize = ( voice->RateScale * MixBufferSize ) -
       voice->RateScale;
+     
    }
 
 
@@ -2923,7 +2924,7 @@ int MV_Init
    int  status;
    int  buffer;
    int  index;
-
+printf("MV_Init card: %d, rate: %d, voices: %d, channels: %d, bits: %d\n", soundcard, MixRate, Voices, numchannels, samplebits);
    if ( MV_Installed )
       {
       MV_Shutdown();
@@ -3391,7 +3392,7 @@ int MV_LockMemory
    }
 
 #ifndef PLAT_DOS
-void ClearBuffer_DW( void *ptr, unsigned data, int length )
+IRAM_ATTR void ClearBuffer_DW( void *ptr, unsigned data, int length )
 {
 	unsigned *d = (unsigned *)ptr;
 	

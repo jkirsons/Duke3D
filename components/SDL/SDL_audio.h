@@ -9,7 +9,7 @@
 
 // Needed for calling the actual sound output.
 #define SAMPLECOUNT		256
-#define SAMPLERATE		11025 * 4	// Hz
+#define SAMPLERATE		11025 * 1	// Hz
 #define SAMPLESIZE		2   	// 16bit
 
 typedef struct{

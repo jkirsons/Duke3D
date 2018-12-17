@@ -220,8 +220,8 @@ void CONFIG_SetDefaults( void )
    VoiceToggle = 1;
    AmbienceToggle = 1;
    OpponentSoundToggle = 1;
-   FXVolume = 220;
-   MusicVolume = 200;
+   FXVolume = 64;
+   MusicVolume = 64;
    FXDevice = SoundScape;
    MusicDevice = -1;
    ReverseStereo = 0;
@@ -229,7 +229,7 @@ void CONFIG_SetDefaults( void )
    NumVoices = 32;
    NumChannels = 1;
    NumBits = 16;
-   MixRate = 44100;
+   MixRate = 11000;
 
    // mouse
    mouseSensitivity_X = 16;
@@ -241,7 +241,7 @@ void CONFIG_SetDefaults( void )
    ud.extended_screen_size = 0;
    ud.screen_tilting = 1;
    ud.brightness = 16;
-   ud.auto_run = 1;
+   ud.auto_run = 0;
    ud.showweapons = 0;
    ud.tickrate = 0;
    ud.scrollmode = 0;
@@ -737,7 +737,7 @@ void CONFIG_ReadSetup( void )
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "NumBits",&NumBits);
    NumBits = 16;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MixRate",&MixRate);
-   MixRate = 44100;
+   MixRate = 11000;
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "MidiPort",&MidiPort);
    SCRIPT_GetNumber( scripthandle, "Sound Setup", "BlasterAddress",&dummy);
    BlasterConfig.Address = dummy;

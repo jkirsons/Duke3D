@@ -44,7 +44,7 @@ short probey=0,lastprobey=0,last_menu,globalskillsound=-1;
 short sh,onbar,buttonstat,deletespot;
 short last_zero,last_fifty,last_threehundred = 0;
 static uint8_t  fileselect = 1, menunamecnt;
-static char menuname[256][17];
+EXT_RAM_ATTR static char menuname[256][17];
 
 // File tree info
 //
@@ -2435,7 +2435,8 @@ else
             x = probe(c+6,43,16,6);
 
             if(x == -1)
-                { if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0); }
+                { if(ps[myconnectindex].gm&MODE_GAME) cmenu(50);else cmenu(0); 
+                  CONFIG_WriteSetup();}
 
             switch(x)
             {
